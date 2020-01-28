@@ -1,0 +1,191 @@
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\obj\Debug\StockManagementApi.csprojAssemblyReference.cache
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\obj\Debug\StockManagementApi.csproj.CoreCompileInputs.cache
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\StockManagementApi.dll.config
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\StockManagementApi.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\StockManagementApi.pdb
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csc.exe
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csc.exe.config
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csc.rsp
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csi.exe
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csi.exe.config
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\csi.rsp
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.CSharp.Core.targets
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.Managed.Core.targets
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\Microsoft.VisualBasic.Core.targets
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.AppContext.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Collections.Immutable.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Console.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Diagnostics.FileVersionInfo.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Diagnostics.StackTrace.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.IO.Compression.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.IO.FileSystem.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.IO.FileSystem.Primitives.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.IO.Pipes.AccessControl.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.IO.Pipes.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Reflection.Metadata.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.AccessControl.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Claims.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Cryptography.Algorithms.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Cryptography.Encoding.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Cryptography.Primitives.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Cryptography.X509Certificates.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Security.Principal.Windows.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Text.Encoding.CodePages.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.ValueTuple.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Xml.ReaderWriter.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Xml.XmlDocument.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Xml.XPath.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\System.Xml.XPath.XDocument.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\vbc.exe
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\vbc.exe.config
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\vbc.rsp
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\VBCSCompiler.exe
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\roslyn\VBCSCompiler.exe.config
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Antlr3.Runtime.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Dapper.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Web.Infrastructure.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Newtonsoft.Json.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Net.Http.Formatting.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Helpers.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Http.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Http.WebHost.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Mvc.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Optimization.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Razor.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.Deployment.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.Razor.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\WebGrease.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Dapper.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Newtonsoft.Json.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Net.Http.Formatting.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Helpers.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Http.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Http.WebHost.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Mvc.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Optimization.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Razor.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.Deployment.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.WebPages.Razor.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Antlr3.Runtime.pdb
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\obj\Debug\StockManagementApi.csproj.CopyComplete
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\obj\Debug\StockManagementApi.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\obj\Debug\StockManagementApi.pdb
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Cors.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Host.SystemWeb.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Security.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Security.OAuth.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Owin.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\System.Web.Cors.dll
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Cors.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Host.SystemWeb.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Security.xml
+H:\Svn Projects\Stock Management App Api\StockManagementApi\StockManagementApi\bin\Microsoft.Owin.Security.OAuth.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\obj\Debug\StockManagementApi.csprojAssemblyReference.cache
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\obj\Debug\StockManagementApi.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\obj\Debug\StockManagementApi.pdb
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\StockManagementApi.dll.config
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\StockManagementApi.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\StockManagementApi.pdb
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csc.exe
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csc.exe.config
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csc.rsp
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csi.exe
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csi.exe.config
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\csi.rsp
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.CSharp.Core.targets
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.Managed.Core.targets
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\Microsoft.VisualBasic.Core.targets
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.AppContext.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Collections.Immutable.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Console.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Diagnostics.FileVersionInfo.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Diagnostics.StackTrace.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.IO.Compression.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.IO.FileSystem.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.IO.FileSystem.Primitives.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.IO.Pipes.AccessControl.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.IO.Pipes.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Reflection.Metadata.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.AccessControl.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Claims.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Cryptography.Algorithms.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Cryptography.Encoding.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Cryptography.Primitives.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Cryptography.X509Certificates.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Security.Principal.Windows.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Text.Encoding.CodePages.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.ValueTuple.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Xml.ReaderWriter.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Xml.XmlDocument.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Xml.XPath.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\System.Xml.XPath.XDocument.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\vbc.exe
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\vbc.exe.config
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\vbc.rsp
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\VBCSCompiler.exe
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\roslyn\VBCSCompiler.exe.config
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Antlr3.Runtime.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Dapper.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Cors.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Host.SystemWeb.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Security.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Security.OAuth.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Web.Infrastructure.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Newtonsoft.Json.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Owin.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Net.Http.Formatting.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Cors.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Helpers.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Http.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Http.WebHost.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Mvc.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Optimization.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Razor.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.Deployment.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.Razor.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\WebGrease.dll
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Dapper.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Cors.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Host.SystemWeb.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Security.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.Owin.Security.OAuth.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Newtonsoft.Json.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Net.Http.Formatting.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Helpers.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Http.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Http.WebHost.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Mvc.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Optimization.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.Razor.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.Deployment.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\System.Web.WebPages.Razor.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Antlr3.Runtime.pdb
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+E:\SVN Projects\Stock Api\stockmanagement-api\StockManagementApi\obj\Debug\StockManagementApi.csproj.CopyComplete
