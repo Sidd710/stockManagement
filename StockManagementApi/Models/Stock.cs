@@ -7,7 +7,7 @@ namespace StockManagementApi.Models
 {
     public class Stock
     {
-       // public int Id { get; set; }
+        // public int Id { get; set; }
         public int StockInId { get; set; }
         public string LotBatchId { get; set; }
         public int ProductId { get; set; }
@@ -36,7 +36,7 @@ namespace StockManagementApi.Models
         public DateTime ExpDate { get; set; }
         public DateTime EslDate { get; set; }
         public int AvailableQuantity { get; set; }
-     
+
 
     }
 
@@ -57,5 +57,15 @@ namespace StockManagementApi.Models
         public int Quantity { get; set; }
         public DateTime DateOfDispatch { get; set; }
     }
-         
+    public class ViewStockIn
+    {
+        public int StockInId { get; set; }
+        public string LotBatchId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string CategoryName { get; set; }
+        public string Description { get; set; }
+        public DateTime DateOfReceipt { get; set; }
+        public List<Batch> Batch { get; set; }
+    }
 }

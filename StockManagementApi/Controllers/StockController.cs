@@ -52,7 +52,7 @@ namespace StockManagementApi.Controllers
 
                     };
                     quantity = quantity + item.Quantity;
-                    batchDetails.BatchId = connection.Query<int>(@"insert Stock_BatchMaster(BatchName,Quantity,WarehouseSectionId,MfgDate,ExpDate,EslDate,AvailableQuantity) values (@BatchName,@Quantity,@WarehouseSectionId,@MfgDate,@ExpDate,@EslDate,@AvailableQuantity) select cast(scope_identity() as int)", batchDetails).First();
+                    batchDetails.BatchId = connection.Query<int>(@"insert Stock_BatchMaster(BatchName,Quantity,WarehouseSectionId,MfgDate,ExpDate,EslDate,AvailableQuantity) values (@BatchName,@Quantity,@WarehouseSectionId,@MfgDate,@ExpDate,@EslDate,@Quantity) select cast(scope_identity() as int)", batchDetails).First();
                     BatchIds.Add(batchDetails.BatchId);
                 }
 
@@ -79,8 +79,8 @@ namespace StockManagementApi.Controllers
 
                 };
                 stockInDetails.StockInId = connection.Query<int>(@"insert Stock_StockIn(LotBatchId,DateOfReceipt,CrvNumber,Description,ReceivedFrom,
-                                         PackingMaterialName,OriginalManufacture,GenericName,Weight) values (@LotBatchId,@DateOfReceipt,@CrvNumber,@Description,@ReceivedFrom,
-                                         @PackingMaterialName,@OriginalManufacture,@GenericName,@Weight) select cast(scope_identity() as int)", stockInDetails).First();
+                                         PackingMaterialName,OriginalManufacture,GenericName,Weight,ProductId) values (@LotBatchId,@DateOfReceipt,@CrvNumber,@Description,@ReceivedFrom,
+                                         @PackingMaterialName,@OriginalManufacture,@GenericName,@Weight,@ProductId) select cast(scope_identity() as int)", stockInDetails).First();
 
                 var productExist = connection.Query<ProductQuantity>("Select * from Stock_QuantityMaster where ProductId = @ProductId", new { ProductId = stockIn.stock.ProductId }).FirstOrDefault();
 
@@ -168,6 +168,55 @@ namespace StockManagementApi.Controllers
 
 
             }
+        }
+
+        [HttpGet]
+        public List<ViewStockIn> ViewStockIn()
+        {
+            List<Stock> StockInList = new List<Stock>();
+            List<ViewStockIn> viewStockIns = new List<ViewStockIn>();
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+               
+                connection.Open();
+                StockInList = connection.Query<Stock>("Select * from Stock_StockIn").ToList();
+                foreach (var item in StockInList)
+                {
+                    ViewStockIn viewStockInDetails = new ViewStockIn();
+                    string[] BatchId = item.LotBatchId.Split(',');
+                    List<Batch> batch = new List<Batch>();
+                    
+                 
+                    foreach (var batchIds in BatchId)
+                    {
+                        viewStockInDetails.Batch = new List<Batch>();
+
+                        var currentBatchDetails = connection.Query<Batch>("Select * from Stock_BatchMaster where BatchId = @value", new { value = batchIds }).FirstOrDefault();
+                         Batch tempBatchDetails = new Batch();
+                        tempBatchDetails.BatchId = currentBatchDetails.BatchId;
+                        tempBatchDetails.BatchName = currentBatchDetails.BatchName;
+                        tempBatchDetails.EslDate = currentBatchDetails.EslDate;
+                        tempBatchDetails.Quantity = currentBatchDetails.Quantity;
+                        tempBatchDetails.WarehouseSectionId = currentBatchDetails.WarehouseSectionId;
+                        
+                        
+                        viewStockInDetails.Batch.Add(tempBatchDetails);
+                    }
+                    var currentProduct = connection.Query<Product>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockInDetails.ProductName = currentProduct.Product_Name;
+                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    viewStockInDetails.CategoryName = currentCategory.Category_Name;
+                    viewStockInDetails.LotBatchId = item.LotBatchId;
+                    viewStockInDetails.ProductId = item.ProductId;
+                    viewStockInDetails.Description = item.Description;
+                    viewStockInDetails.DateOfReceipt = item.DateOfReceipt;
+                    viewStockIns.Add(viewStockInDetails);
+                    
+                }
+                connection.Close();
+            }
+            return viewStockIns;
+
         }
     }
 }
