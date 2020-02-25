@@ -23,7 +23,7 @@ namespace StockManagementApi.Controllers
         // POST: api/User
         [HttpPost]
         [ResponseType(typeof(UserMaster))]
-        [Authorize(Roles = "17")]
+       
         public async Task<IHttpActionResult> AddUser([FromBody]UserMaster value)
         {
             if (!ModelState.IsValid)
@@ -65,7 +65,7 @@ namespace StockManagementApi.Controllers
         }
         [HttpPut]
         [ResponseType(typeof(UserMaster))]
-        [Authorize(Roles = "17")]
+      
         public async Task<IHttpActionResult> UpdateUser([FromBody]UserMaster value)
         {
             if (!ModelState.IsValid)
@@ -123,7 +123,7 @@ namespace StockManagementApi.Controllers
             
         }
        
-        [Authorize(Roles = "17")]
+       
         public List<RoleMaster> GetRole()
         {
             List<RoleMaster> role = new List<RoleMaster>();
@@ -135,7 +135,7 @@ namespace StockManagementApi.Controllers
             }
             return role;
         }
-        [Authorize(Roles = "17")]
+       
         public UserMaster GetUserDetails()
         {
             var identity = (ClaimsIdentity)User.Identity;
@@ -151,7 +151,7 @@ namespace StockManagementApi.Controllers
             }
             return role;
         }
-        [Authorize(Roles = "17")]
+       
         public List<UserMaster> GetAllUserDetails()
         {
             var identity = (ClaimsIdentity)User.Identity;
@@ -166,6 +166,39 @@ namespace StockManagementApi.Controllers
             return role;
         }
 
+       public async Task<IHttpActionResult> Login(UserMaster loginCredentials)
+        {
+                UserMaster userMaster = new UserMaster();
+                using (var connection = new SqlConnection(sqlConnectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+                        var sql = "select * from UserMaster where User_Name = '" + loginCredentials.User_name + "' and Password = '" + loginCredentials.Password + "'";
+
+                        var userDetail = connection.Query<UserMaster>(sql).FirstOrDefault();
+                       
+                        connection.Close();
+                    if (userDetail == null)
+                    {
+                        return Json(new { Message = "Invalid Credentials" });
+                    }
+                    else
+                    {
+                        return Json(new { userDetails = userDetail });
+                    }
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw ex;
+                    }
+
+                }
+
+            
+        }
         public async Task<int> InsertAsync(UserMaster objentity,SqlConnection connection,string Action)
         {
 
