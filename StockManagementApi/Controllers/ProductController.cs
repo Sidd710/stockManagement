@@ -20,7 +20,7 @@ namespace StockManagementApi.Controllers
         [HttpPost]
         [ResponseType(typeof(Product))]
         [Authorize(Roles = "17")]
-        public async Task<IHttpActionResult> AddProduct([FromBody]Product value)
+        public async Task<IHttpActionResult> AddProduct([FromBody]ProductList value)
         {
             if (!ModelState.IsValid)
             {
@@ -37,7 +37,7 @@ namespace StockManagementApi.Controllers
                 var userExist = connection.Query<Product>("Select * from ProductMaster where Category_Id = @Category_Id and Product_Name =@Product_Name", new { Category_Id = value.Category_Id, Product_Name=value.Product_Name }).FirstOrDefault();
                 if (userExist == null)
                 {
-                    var p = new Product { Product_Name = value.Product_Name, Product_Desc = value.Product_Desc, Short_Product_Desc = value.Short_Product_Desc, Admin_Remarks = value.Admin_Remarks, product_cost = value.product_cost, Product_Code = value.Product_Code, IsActive = value.IsActive, Category_Id = value.Category_Id, AddedOn = DateTime.Now,
+                    var p = new ProductList { Product_Name = value.Product_Name, Product_Desc = value.Product_Desc, Short_Product_Desc = value.Short_Product_Desc, Admin_Remarks = value.Admin_Remarks, product_cost = value.product_cost, Product_Code = value.Product_Code, IsActive = value.IsActive, Category_Id = value.Category_Id, AddedOn = DateTime.Now,
                         AddedBy = userId, StockQty = value.StockQty, Cat = value.Cat, GSreservre = value.GSreservre, productUnit = value.productUnit,IsProductStatus="Pending"};
                     p.Product_ID = connection.Query<int>(@"insert ProductMaster(Product_Name,Product_Desc,Short_Product_Desc,Admin_Remarks,product_cost,Product_Code,IsActive,Category_Id,
                         AddedOn,AddedBy,StockQty,Cat,GSreservre,productUnit,IsProductStatus) values (@Product_Name,@Product_Desc,@Short_Product_Desc,@Admin_Remarks,@product_cost,@Product_Code,@IsActive,@Category_Id,

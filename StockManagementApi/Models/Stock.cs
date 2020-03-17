@@ -79,7 +79,7 @@ namespace StockManagementApi.Models
         [JsonProperty("Bc")]
         public string BatchCode { get; set; }
         [JsonProperty("Bnu")]
-        public string BatchNumber { get; set; }
+        public string BatchNo { get; set; }
         [JsonProperty("Qu")]
         public int Quantity { get; set; }
         [JsonProperty("WId")]
@@ -114,12 +114,36 @@ namespace StockManagementApi.Models
     }
     public class StockOut
     {
-        [JsonProperty("Lid")]
-        public int LotBatchId { get; set; }
+
+        [JsonProperty("SQI")]
+        public int StockOutId { get; set; }
         [JsonProperty("Qua")]
         public int Quantity { get; set; }
-        [JsonProperty("Des")]
+        [JsonProperty("BID")]
+        public int BatchId { get; set; }
+        [JsonProperty("PID")]
+        public int ProductId { get; set; }
+        [JsonProperty("Dos")]
         public DateTime DateOfDispatch { get; set; }
+        [JsonProperty("Rem")]
+        public string Remarks { get; set; }
+        [JsonProperty("Vno")]
+        public string VoucherNumber { get; set; }
+        [JsonProperty("Sty")]
+        public string StockType { get; set; }
+
+    }
+    public class StockOutParameter
+    {
+        public List <StockOutBatchList> stockOutBatchList { get; set; }
+        public StockOut stockOut { get; set; }
+    }
+    public class StockOutBatchList
+    {
+        [JsonProperty("BID")]
+        public int BID { get; set; }
+        [JsonProperty("Qua")]
+        public int Quantity { get; set; }
     }
     public class ViewStockIn
     {

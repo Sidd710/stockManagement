@@ -46,15 +46,15 @@ namespace StockManagementApi.Controllers
                         MfgDate = item.MfgDate,
                         ExpDate = item.ExpDate,
                         ESL = item.ESL,
-                        AvailableQuantity = item.AvailableQuantity,
+                        AvailableQuantity = item.Quantity,
                         BatchCode = item.BatchCode,
-                        BatchNumber = item.BatchNumber
+                        BatchNo = item.BatchNo
 
 
 
                     };
                     quantity = quantity + item.Quantity;
-                    batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL) select cast(scope_identity() as int)", batchDetails).First();
+                    batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
                     BatchIds.Add(batchDetails.BatchId);
                 }
                 var receivedFrom = string.Empty;
@@ -144,7 +144,7 @@ namespace StockManagementApi.Controllers
             }
         }
 
-        public async Task<IHttpActionResult> StockOut([FromBody] StockOut stockOut)
+        public async Task<IHttpActionResult> StockOut([FromBody] StockOutParameter stockOut)
         {
             if (!ModelState.IsValid)
             {
@@ -156,39 +156,51 @@ namespace StockManagementApi.Controllers
                 try
                 {
                     connection.Open();
-
-                    var lotExist = connection.Query<Batch>("Select * from Stock_BatchMaster where BatchId = @BatchId", new { BatchId = stockOut.LotBatchId }).FirstOrDefault();
-                    if (lotExist == null)
+                    foreach (var item in stockOut.stockOutBatchList)
                     {
-                        return Json(new { Message = "Please Select Valid Lot/Batch" });
+                        var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
+                        if (lotExist == null)
+                        {
+                            return Json(new { Message = "Please Select Valid Lot/Batch" });
+                        }
+                        else if (lotExist.AvailableQuantity < item.Quantity)
+                        {
+                            return Json(new { Message = "Quantity Not Available FOr Batch Id :- "+item.BID });
+
+                        }
+
                     }
-                    else if (lotExist.AvailableQuantity <= stockOut.Quantity)
+                    foreach (var item in stockOut.stockOutBatchList)
                     {
-                        return Json(new { Message = "Quantity Not Available" });
-
-                    }
-                    else
-                    {
-                        var identity = (ClaimsIdentity)User.Identity;
-                        var userId = identity.Claims
-                            .Where(c => c.Type == ClaimTypes.Sid)
-                            .Select(c => c.Value);
-                        var p = new StockOut { LotBatchId = stockOut.LotBatchId, DateOfDispatch = stockOut.DateOfDispatch, Quantity = stockOut.Quantity };
-                        p.LotBatchId = connection.Query<int>(@"insert Stock_StockOut(LotBatchId,DateOfDispatch,Quantity) values (@LotBatchId,@DateOfDispatch,@Quantity) select cast(scope_identity() as int)", p).First();
-                        int availableQuantity = lotExist.AvailableQuantity - stockOut.Quantity;
-                        string updateQuery = @"UPDATE Stock_BatchMaster SET AvailableQuantity = @availableQuantity WHERE BatchId = @BatchId";
-
+                        //var p = new StockOut { Remarks=st DateOfDispatch = stockOut.stockOut.DateOfDispatch, Quantity = stockOut.stockOut.Quantity };
+                        //p.s = connection.Query<int>(@"insert Stock_StockOut(LotBatchId,DateOfDispatch,Quantity) values (@LotBatchId,@DateOfDispatch,@Quantity) select cast(scope_identity() as int)", p).First();
+                        var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
+                        int availableQuantity = lotExist.AvailableQuantity - item.Quantity;
+                        string updateQuery = @"UPDATE BatchMaster SET AvailableQuantity = @availableQuantity WHERE BID = @BID";
+                        var p = new StockOut { 
+                            Remarks=stockOut.stockOut.Remarks,
+                            DateOfDispatch = stockOut.stockOut.DateOfDispatch, 
+                            BatchId = item.BID,
+                            Quantity=item.Quantity,
+                            ProductId=stockOut.stockOut.ProductId,
+                            VoucherNumber=stockOut.stockOut.VoucherNumber,
+                            StockType=stockOut.stockOut.StockType
+                            };
                         var result = connection.Execute(updateQuery, new
                         {
                             availableQuantity,
-                            BatchId = stockOut.LotBatchId,
+                            item.BID,
 
                         });
+                        p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType) select cast(scope_identity() as int)", p).First();
 
-                        return Json(new { Message = "Stock quantity updated successfully" });
 
+                      
 
                     }
+                    return Json(new { Message = "Stock quantity updated successfully" });
+
+
                 }
                 catch (Exception ex)
                 {
@@ -232,7 +244,7 @@ namespace StockManagementApi.Controllers
 
                         viewStockInDetails.Batch.Add(tempBatchDetails);
                     }
-                    var currentProduct = connection.Query<Product>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
+                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockInDetails.ProductName = currentProduct.Product_Name;
                     var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
                     viewStockInDetails.CategoryName = currentCategory.Category_Name;
