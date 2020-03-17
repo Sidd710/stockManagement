@@ -12,33 +12,62 @@ namespace StockManagementApi.Models
         [JsonProperty("Sid")]
         public int StockInId { get; set; }
         [JsonProperty("Lid")]
-        public string LotBatchId { get; set; }
+        public string BatchIdFromMobile { get; set; }
         [JsonProperty("Pid")]
         public int ProductId { get; set; }
         [JsonProperty("Dor")]
-        public DateTime DateOfReceipt { get; set; }
+        public DateTime RecievedOn { get; set; }
         [JsonProperty("Crv")]
-        public string CrvNumber { get; set; }
+        public string CRVNo { get; set; }
         [JsonProperty("Des")]
-        public string Description { get; set; }
+        public string Remarks { get; set; }
         [JsonProperty("Rcf")]
-        public string ReceivedFrom { get; set; }
+        public string RecievedFrom { get; set; }
         [JsonProperty("Pmn")]
-        public string PackingMaterialName { get; set; }
+        public string PackingMaterial{ get; set; }
         [JsonProperty("Omn")]
-        public string OriginalManufacture { get; set; }
+        public string OriginalManf { get; set; }
         [JsonProperty("Gn")]
         public string GenericName { get; set; }
         [JsonProperty("We")]
         public decimal Weight { get; set; }
         [JsonProperty("Aby")]
         public int AddedBy { get; set; }
+        [JsonProperty("Qua")]
+        public int Quantity { get; set; }
         [JsonProperty("Abo")]
         public DateTime AddedOn { get; set; }
         //public int ModifiedBy { get; set; }
         //public DateTime ModifiedOn { get; set; }
         [JsonProperty("Is")]
         public Boolean IsActive { get; set; }
+        [JsonProperty("Ifm")]
+        public bool IsFromMobile { get; set; }
+
+        [JsonProperty("ICP")]
+        public string IsCP { get; set; }
+        [JsonProperty("IIDT")]
+        public string IIDT { get; set; }
+
+        [JsonProperty("ILP")]
+        public string IsLP { get; set; }
+        [JsonProperty("IICT")]
+        public string IICT { get; set; }
+
+        [JsonProperty("SuId")]
+        public int SupplierId { get; set; }
+        [JsonProperty("AT")]
+        public string ATNo { get; set; }
+
+        [JsonProperty("OSup")]
+        public string OtherSupplier { get; set; }
+        public string TransferedBy { get; set; }
+        [JsonProperty("SS")]
+        public bool SampleSent { get; set; }
+        [JsonProperty("supNu")]
+        public string SupplierNo{ get; set; }
+
+
 
     }
     public class Batch
@@ -47,16 +76,20 @@ namespace StockManagementApi.Models
         public int BatchId { get; set; }
         [JsonProperty("Bn")]
         public string BatchName { get; set; }
+        [JsonProperty("Bc")]
+        public string BatchCode { get; set; }
+        [JsonProperty("Bnu")]
+        public string BatchNumber { get; set; }
         [JsonProperty("Qu")]
         public int Quantity { get; set; }
-        [JsonProperty("Wsi")]
-        public int WarehouseSectionId { get; set; }
+        [JsonProperty("WId")]
+        public int WarehouseID { get; set; }
         [JsonProperty("Mfg")]
         public DateTime MfgDate { get; set; }
         [JsonProperty("Exp")]
         public DateTime ExpDate { get; set; }
         [JsonProperty("Esl")]
-        public DateTime EslDate { get; set; }
+        public DateTime ESL { get; set; }
         [JsonProperty("Avl")]
         public int AvailableQuantity { get; set; }
 

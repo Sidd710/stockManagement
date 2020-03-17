@@ -55,6 +55,19 @@ namespace StockManagementApi.Controllers
 
             }
         }
+        public List<Product> GetAllProduct()
+        {
+           // var identity = (ClaimsIdentity)User.Identity;
+            List<Product> product = new List<Product>();
+
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                connection.Open();
+                product = connection.Query<Product>("Select * from ProductMaster where IsActive =1").ToList();
+                connection.Close();
+            }
+            return product;
+        }
         public class ProcessException : Exception
         {
             public ProcessException(string message)

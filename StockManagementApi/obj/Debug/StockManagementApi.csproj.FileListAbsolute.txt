@@ -375,8 +375,8 @@ H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\St
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\bin\System.Web.WebPages.Razor.xml
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\bin\Antlr3.Runtime.pdb
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csprojAssemblyReference.cache
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csproj.CoreCompileInputs.cache
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csproj.CopyComplete
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.dll
 H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.pdb
+H:\Svn Projects\Stock Management App Api\Stock Api New Source\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csprojAssemblyReference.cache
