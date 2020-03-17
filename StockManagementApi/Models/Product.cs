@@ -5,7 +5,7 @@ using System.Web;
 
 namespace StockManagementApi.Models
 {
-    public class Product
+    public class ProductList
     {
         public int Product_ID { get; set; }
         public string Product_Name { get; set; }
@@ -27,5 +27,9 @@ namespace StockManagementApi.Models
         public string Cat { get; set; }
         public string productUnit { get; set; }
         public int GSreservre { get; set; }
+    }
+    public class Product
+    {
+        public List<ProductList> ProductList { get; set; }
     }
 }

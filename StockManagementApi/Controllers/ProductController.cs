@@ -55,15 +55,16 @@ namespace StockManagementApi.Controllers
 
             }
         }
-        public List<Product> GetAllProduct()
+        public Product GetAllProduct()
         {
-           // var identity = (ClaimsIdentity)User.Identity;
-            List<Product> product = new List<Product>();
+            // var identity = (ClaimsIdentity)User.Identity;
+            Product product = new Product();
+            product.ProductList=new List<ProductList>();
 
             using (var connection = new SqlConnection(sqlConnectionString))
             {
                 connection.Open();
-                product = connection.Query<Product>("Select * from ProductMaster where IsActive =1").ToList();
+                product.ProductList = connection.Query<ProductList>("Select * from ProductMaster where IsActive =1").ToList();
                 connection.Close();
             }
             return product;
