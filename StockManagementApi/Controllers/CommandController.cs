@@ -38,10 +38,10 @@ namespace StockManagementApi.Controllers
                         Descripition = value.Descripition,
                         IsActive = true,
                         AddedOn=DateTime.Now,
-                        UpdatedOn=DateTime.Now
+                        UndatedOn= DateTime.Now
                         
                     };
-                    p.Id = connection.Query<int>(@"insert CommandMaster(Name,Descripition,IsActive,AddedOn,UpdatedOn) values (@Name,@Descripition,@IsActive,@AddedOn,@UpdatedOn) select cast(scope_identity() as int)", p).First();
+                    p.Id = connection.Query<int>(@"insert CommandMaster(Name,Descripition,IsActive,AddedOn,UndatedOn) values (@Name,@Descripition,@IsActive,@AddedOn,@UndatedOn) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
 
