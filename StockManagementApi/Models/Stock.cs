@@ -154,6 +154,33 @@ namespace StockManagementApi.Models
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public DateTime DateOfReceipt { get; set; }
-        public List<Batch> Batch { get; set; }
+        public List<BatchDetails> Batch { get; set; }
+    }
+    public class ViewStockOut
+    {
+        public int StockInId { get; set; }
+        public int BatchId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public int Quantity { get; set; }
+        public string StockType { get; set; }
+        public string Remarks { get; set; }
+        public string VoucherNumber { get; set; }
+        public DateTime DateOfReceipt { get; set; }
+        public DateTime DateofDispatch { get; set; }
+        public String BatchName { get; set; }
+    }
+    public class AvailableStock
+    {
+        public int StockInId { get; set; }
+        public string LotBatchId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string CategoryName { get; set; }
+        public string Description { get; set; }
+        public DateTime DateOfReceipt { get; set; }
+       
+        public List<BatchDetails> Batch { get; set; }
+
     }
 }

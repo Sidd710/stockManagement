@@ -183,6 +183,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BatchController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CommandController.cs" />
+    <Compile Include="Controllers\FormationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StockController.cs" />
@@ -194,6 +196,8 @@
     </Compile>
     <Compile Include="Models\BatchDetailMaster.cs" />
     <Compile Include="Models\CategoryType.cs" />
+    <Compile Include="Models\Formation.cs" />
+    <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Stock.cs" />
     <Compile Include="Models\UserMaster.cs" />

@@ -58,7 +58,7 @@ namespace StockManagementApi.Controllers
                     BatchIds.Add(batchDetails.BatchId);
                 }
                 var receivedFrom = string.Empty;
-                if(stockIn.stock.IsCP!=null &&stockIn.stock.IsCP != "")
+                if (stockIn.stock.IsCP != null && stockIn.stock.IsCP != "")
                 {
                     receivedFrom = stockIn.stock.IsCP;
                 }
@@ -88,16 +88,16 @@ namespace StockManagementApi.Controllers
                     GenericName = stockIn.stock.GenericName,
                     Weight = stockIn.stock.Weight,
                     AddedOn = DateTime.Now,
-                    SupplierId=stockIn.stock.SupplierId,
+                    SupplierId = stockIn.stock.SupplierId,
                     //  IsActive = stockIn.stock.IsActive,
                     ProductId = stockIn.stock.ProductId,
                     Quantity = stockIn.stock.Quantity,
-                    IsFromMobile=stockIn.stock.IsFromMobile,
-                    ATNo=stockIn.stock.ATNo,
-                    OtherSupplier=stockIn.stock.OtherSupplier,
-                    TransferedBy=TransferedBy,
-                    SampleSent=stockIn.stock.SampleSent,
-                    SupplierNo=stockIn.stock.SupplierNo
+                    IsFromMobile = stockIn.stock.IsFromMobile,
+                    ATNo = stockIn.stock.ATNo,
+                    OtherSupplier = stockIn.stock.OtherSupplier,
+                    TransferedBy = TransferedBy,
+                    SampleSent = stockIn.stock.SampleSent,
+                    SupplierNo = stockIn.stock.SupplierNo
 
 
                 };
@@ -165,7 +165,7 @@ namespace StockManagementApi.Controllers
                         }
                         else if (lotExist.AvailableQuantity < item.Quantity)
                         {
-                            return Json(new { Message = "Quantity Not Available FOr Batch Id :- "+item.BID });
+                            return Json(new { Message = "Quantity Not Available FOr Batch Id :- " + item.BID });
 
                         }
 
@@ -177,15 +177,16 @@ namespace StockManagementApi.Controllers
                         var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
                         int availableQuantity = lotExist.AvailableQuantity - item.Quantity;
                         string updateQuery = @"UPDATE BatchMaster SET AvailableQuantity = @availableQuantity WHERE BID = @BID";
-                        var p = new StockOut { 
-                            Remarks=stockOut.stockOut.Remarks,
-                            DateOfDispatch = stockOut.stockOut.DateOfDispatch, 
+                        var p = new StockOut
+                        {
+                            Remarks = stockOut.stockOut.Remarks,
+                            DateOfDispatch = stockOut.stockOut.DateOfDispatch,
                             BatchId = item.BID,
-                            Quantity=item.Quantity,
-                            ProductId=stockOut.stockOut.ProductId,
-                            VoucherNumber=stockOut.stockOut.VoucherNumber,
-                            StockType=stockOut.stockOut.StockType
-                            };
+                            Quantity = item.Quantity,
+                            ProductId = stockOut.stockOut.ProductId,
+                            VoucherNumber = stockOut.stockOut.VoucherNumber,
+                            StockType = stockOut.stockOut.StockType
+                        };
                         var result = connection.Execute(updateQuery, new
                         {
                             availableQuantity,
@@ -195,7 +196,7 @@ namespace StockManagementApi.Controllers
                         p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType) select cast(scope_identity() as int)", p).First();
 
 
-                      
+
 
                     }
                     return Json(new { Message = "Stock quantity updated successfully" });
@@ -221,7 +222,7 @@ namespace StockManagementApi.Controllers
             {
 
                 connection.Open();
-                StockInList = connection.Query<Stock>("Select * from Stock_StockIn").ToList();
+                StockInList = connection.Query<Stock>("Select * from StockMaster").ToList();
                 foreach (var item in StockInList)
                 {
                     ViewStockIn viewStockInDetails = new ViewStockIn();
@@ -231,16 +232,107 @@ namespace StockManagementApi.Controllers
 
                     foreach (var batchIds in BatchId)
                     {
-                        viewStockInDetails.Batch = new List<Batch>();
+                        viewStockInDetails.Batch = new List<BatchDetails>();
 
-                        var currentBatchDetails = connection.Query<Batch>("Select * from Stock_BatchMaster where BatchId = @value", new { value = batchIds }).FirstOrDefault();
-                        Batch tempBatchDetails = new Batch();
-                        tempBatchDetails.BatchId = currentBatchDetails.BatchId;
+                        var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
+                        BatchDetails tempBatchDetails = new BatchDetails();
+                        tempBatchDetails.BID = currentBatchDetails.BID;
                         tempBatchDetails.BatchName = currentBatchDetails.BatchName;
-                        tempBatchDetails.ESL = currentBatchDetails.ESL;
+                        tempBatchDetails.Esl = currentBatchDetails.Esl;
                         tempBatchDetails.Quantity = currentBatchDetails.Quantity;
                         tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
 
+
+                        viewStockInDetails.Batch.Add(tempBatchDetails);
+                    }
+                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockInDetails.ProductName = currentProduct.Product_Name;
+                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    viewStockInDetails.CategoryName = currentCategory.Category_Name;
+                    viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
+                    viewStockInDetails.ProductId = item.ProductId;
+                    viewStockInDetails.Description = item.Remarks;
+                    viewStockInDetails.DateOfReceipt = item.RecievedOn;
+                    viewStockIns.Add(viewStockInDetails);
+
+                }
+                connection.Close();
+            }
+            return viewStockIns;
+
+        }
+
+        [HttpGet]
+        public List<ViewStockOut> ViewStockOut()
+        {
+            List<ViewStockOut> StockOutList = new List<ViewStockOut>();
+            List<ViewStockOut> StockOutItem = new List<ViewStockOut>();
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+                connection.Open();
+                StockOutList = connection.Query<ViewStockOut>("Select * from StockOutMaster").ToList();
+                foreach (var item in StockOutList)
+                {
+                    ViewStockOut viewStockOutDetails = new ViewStockOut();
+                    BatchDetails batchDetails = new BatchDetails();
+                    int BID = item.BatchId;
+                    // List<Batch> batch = new List<Batch>();
+
+
+                    var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @BID", new { BID = BID }).FirstOrDefault();
+
+                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockOutDetails.ProductName = currentProduct.Product_Name;
+                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    //viewStockOutDetails.CategoryName = currentCategory.Category_Name;
+                    // viewStockOutDetails.BatchId = item.BatchId;
+                    viewStockOutDetails.BatchName = currentBatchDetails.BatchName;
+                    viewStockOutDetails.ProductId = item.ProductId;
+                    viewStockOutDetails.Remarks = item.Remarks;
+                    viewStockOutDetails.Quantity = item.Quantity;
+                    viewStockOutDetails.DateofDispatch = item.DateofDispatch;
+                    viewStockOutDetails.StockType = item.StockType;
+                    viewStockOutDetails.VoucherNumber = item.VoucherNumber;
+                    StockOutItem.Add(viewStockOutDetails);
+
+                }
+                connection.Close();
+            }
+            return StockOutItem;
+
+        }
+
+        [HttpGet]
+        public List<AvailableStock> AvailableStock()
+        {
+            List<Stock> StockInList = new List<Stock>();
+            List<AvailableStock> viewStockIns = new List<AvailableStock>();
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+                connection.Open();
+                StockInList = connection.Query<Stock>("Select * from StockMaster").ToList();
+                foreach (var item in StockInList)
+                {
+                    AvailableStock viewStockInDetails = new AvailableStock();
+                    string[] BatchId = item.BatchIdFromMobile.Split(',');
+                    List<Batch> batch = new List<Batch>();
+
+
+                    foreach (var batchIds in BatchId)
+                    {
+                        viewStockInDetails.Batch = new List<BatchDetails>();
+
+                        var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
+                        BatchDetails tempBatchDetails = new BatchDetails();
+                        tempBatchDetails.BID = currentBatchDetails.BID;
+                        tempBatchDetails.BatchName = currentBatchDetails.BatchName;
+                        tempBatchDetails.Esl = currentBatchDetails.Esl;
+                        tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                        tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
+                        tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
+                        tempBatchDetails.WarehouseNo = currentBatchDetails.WarehouseNo;
 
                         viewStockInDetails.Batch.Add(tempBatchDetails);
                     }

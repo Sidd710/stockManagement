@@ -475,3 +475,4 @@ D:\Project\Code to Vipan\API SOurce\stockManagement\StockManagementApi\bin\Syste
 D:\Project\Code to Vipan\API SOurce\stockManagement\StockManagementApi\bin\Antlr3.Runtime.pdb
 D:\Project\Code to Vipan\API SOurce\stockManagement\StockManagementApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 D:\Project\Code to Vipan\API SOurce\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csproj.CopyComplete
+E:\SVN Projects\Stock Api\stockgit\stockManagement\StockManagementApi\obj\Debug\StockManagementApi.csproj.CoreCompileInputs.cache

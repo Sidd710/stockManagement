@@ -19,7 +19,7 @@ namespace StockManagementApi.Controllers
         string sqlConnectionString = ConfigurationManager.AppSettings["Default"];
         [HttpPost]
         [ResponseType(typeof(Product))]
-        [Authorize(Roles = "17")]
+        
         public async Task<IHttpActionResult> AddProduct([FromBody]ProductList value)
         {
             if (!ModelState.IsValid)
