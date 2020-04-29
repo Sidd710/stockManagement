@@ -25,6 +25,10 @@ namespace StockManagementApi.Models
         public int    ModifiedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int CommandId { get; set; }
+        public bool IDT_bool { get; set; }
+        public bool ICT_bool { get; set; }
+        public bool AWS_bool { get; set; }
+        public bool IsMother { get; set; }
 
     }
     public class Depot
