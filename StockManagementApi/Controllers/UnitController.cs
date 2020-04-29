@@ -43,9 +43,11 @@ namespace StockManagementApi.Controllers
                         Addedon = DateTime.Now,
                         ModifiedOn = DateTime.Now,
                         Command = 0,
-                        Formation = 0
+                        Formation = 0,
+                        UnitType=value.UnitType,
+                        UnitTypeOther=value.UnitTypeOther
                     };
-                    p.Unit_Id = connection.Query<int>(@"insert UnitMaster(Unit_Name,Depu_Id,Unit_Desc,IsActive,Addedon,ModifiedOn,Command,Formation) values (@Unit_Name,@Depu_Id,@Unit_Desc,@IsActive,@Addedon,@ModifiedOn,@Command,@Formation) select cast(scope_identity() as int)", p).First();
+                    p.Unit_Id = connection.Query<int>(@"insert UnitMaster(Unit_Name,Depu_Id,Unit_Desc,IsActive,Addedon,ModifiedOn,Command,Formation,UnitType,UnitTypeOther) values (@Unit_Name,@Depu_Id,@Unit_Desc,@IsActive,@Addedon,@ModifiedOn,@Command,@Formation,@UnitType,@UnitTypeOther) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
 
@@ -76,6 +78,24 @@ namespace StockManagementApi.Controllers
 
             return json;
 
+        }
+
+        public dynamic GetAllUnitType()
+        {
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spManageUnitType", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+
+            return json;
         }
         public string DataTableToJSONWithJSONNet(DataTable table)
         {

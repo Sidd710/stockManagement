@@ -45,10 +45,14 @@ namespace StockManagementApi.Controllers
                         ModifiedOn = DateTime.Now,
                         IsParent = value.IsParent,
                         Depu_Location = value.Depu_Location,
-                        Depot_Code = value.Depot_Code  ,
-                        UnitName = value.UnitName
+                        Depot_Code = value.Depot_Code,
+                        UnitName = value.UnitName,
+                        IDT = value.IDT_bool == true ? "IDT" : null,
+                        ICT = value.ICT_bool == true ? "ICT" : null,    
+                        AWS = value.AWS_bool == true ? "AWS" : null,
+                        IsMother=value.IsMother
                     };
-                    p.Depu_Id = connection.Query<int>(@"insert depumaster(Depu_Name,Corp,FormationId,IsActive,Addedon,ModifiedOn,IsParent,Depu_Location,Depot_Code,UnitName) values (@Depu_Name,@Corp,@FormationId,@IsActive,@Addedon,@ModifiedOn,@IsParent,@Depu_Location,@Depot_Code,@UnitName) select cast(scope_identity() as int)", p).First();
+                    p.Depu_Id = connection.Query<int>(@"insert depumaster(Depu_Name,Corp,FormationId,IsActive,Addedon,ModifiedOn,IsParent,Depu_Location,Depot_Code,UnitName,IDT,ICT,AWS,IsMother) values (@Depu_Name,@Corp,@FormationId,@IsActive,@Addedon,@ModifiedOn,@IsParent,@Depu_Location,@Depot_Code,@UnitName,@IDT,@ICT,@AWS,@IsMother) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
 

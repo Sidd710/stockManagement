@@ -20,7 +20,7 @@ namespace StockManagementApi.Models
         public DateTime Addedon { get; set; }
         public int ModifiedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
-        
+        public string UnitTypeOther { get; set; }
 
     }
     public class Unit
