@@ -93,3 +93,4 @@ D:\Kaushal\TestProject\APITestStockManagement\API\StockManagementApi\bin\Microso
 D:\Kaushal\TestProject\APITestStockManagement\API\StockManagementApi\obj\Debug\StockManagementApi.csproj.CopyComplete
 D:\Kaushal\TestProject\APITestStockManagement\API\StockManagementApi\obj\Debug\StockManagementApi.dll
 D:\Kaushal\TestProject\APITestStockManagement\API\StockManagementApi\obj\Debug\StockManagementApi.pdb
+D:\Kaushal\TestProject\APITestStockManagement\API\StockManagementApi\obj\Debug\StockManagementApi.csprojAssemblyReference.cache

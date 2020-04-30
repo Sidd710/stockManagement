@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
 using StockManagementApi.Models;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,66 @@ namespace StockManagementApi.Controllers
         string sqlConnectionString = ConfigurationManager.AppSettings["Default"];
 
         // GET: api/CategoryType
-        [Authorize(Roles = "17")]
-        public IEnumerable<Categories> GetAllCategories()
+        //[Authorize(Roles = "17")]
+        public dynamic GetAllCategories()
         {
-            List<Categories> categoryType = new List<Categories>();
-            using (var connection = new SqlConnection(sqlConnectionString))
-            {
-                connection.Open();
-                categoryType = connection.Query<Categories>("Select ID,Category_Name,Category_desc from CategoryMaster").ToList();
-                connection.Close();
-            }
-            return categoryType;
+            //List<Categories> categoryType = new List<Categories>();
+            //using (var connection = new SqlConnection(sqlConnectionString))
+            //{
+            //    connection.Open();
+            //    categoryType = connection.Query<Categories>("Select ID,Category_Name,Category_desc from CategoryMaster").ToList();
+            //    connection.Close();
+            //}
+            //return categoryType;
+
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spManageCategory", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+
+            return json;
+        }
+
+        public dynamic GetAllCategoryTypes()
+        {
+            //List<Categories> categoryType = new List<Categories>();
+            //using (var connection = new SqlConnection(sqlConnectionString))
+            //{
+            //    connection.Open();
+            //    categoryType = connection.Query<Categories>("Select ID,Category_Name,Category_desc from CategoryMaster").ToList();
+            //    connection.Close();
+            //}
+            //return categoryType;
+
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spManageCategoryType", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+
+            return json;
+        }
+
+        public string DataTableToJSONWithJSONNet(DataTable table)
+        {
+            string JSONString = string.Empty;
+            JSONString = JsonConvert.SerializeObject(table);
+            return JSONString;
         }
 
         // GET: api/CategoryType/5
@@ -39,8 +89,9 @@ namespace StockManagementApi.Controllers
         }
 
         // POST: api/CategoryType
-        [Authorize(Roles = "17")]
-        public async Task<IHttpActionResult> AddCategory([FromBody]CategoryType category)
+        //[Authorize(Roles = "17")]
+        [HttpPost]
+        public async Task<IHttpActionResult> AddCategoryType([FromBody]CategoryType category)
         {
             if (!ModelState.IsValid)
             {
@@ -54,24 +105,53 @@ namespace StockManagementApi.Controllers
                 var catExist = connection.Query<CategoryType>("Select * from CategoryType where Type like @value", new { value = category.Type }).FirstOrDefault();
                 if (catExist == null)
                 {
-                    var identity = (ClaimsIdentity)User.Identity;
-                    var userId = identity.Claims
-                        .Where(c => c.Type == ClaimTypes.Sid)
-                        .Select(c => c.Value);
-                    var p = new CategoryType { Type = category.Type,Description = category.Description, AddedBy = userId.ToString(), AddedOn=DateTime.Now, IsActive = category.IsActive };
-                    p.ID = connection.Query<int>(@"insert CategoryType(Type,Description,AddedBy,AddedOn,IsActive) values (@Type,@Description,@AddedBy,@AddedOn,@IsActive) select cast(scope_identity() as int)", p).First();
-                    return Ok(p);
-                }
+                    //var identity = (ClaimsIdentity)User.Identity;
+                    //var userId = identity.Claims
+                    //    .Where(c => c.Type == ClaimTypes.Sid)
+                    //    .Select(c => c.Value);
+                    var p = new CategoryType { Type = category.Type,Description = category.Description, /*AddedBy = userId.ToString(),*/ AddedOn =DateTime.Now, IsActive = category.IsActive, Category_ID = category.Category_ID };
+                    p.ID = connection.Query<int>(@"insert CategoryType(Type,Description,AddedOn,IsActive,Category_ID) values (@Type,@Description,@AddedOn,@IsActive,@Category_ID) select cast(scope_identity() as int)", p).First();
 
+                    return Json(new { Message = "Record Inserted Successfully" });
+                }   
                 else
                 {
                     throw new ProcessException("Category type already exists");
+                }      
+            }
+
+
+        }
+        // POST: api/CategoryType
+        //[Authorize(Roles = "17")]
+        [HttpPost]
+        public async Task<IHttpActionResult> AddCategory([FromBody]Category category)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                connection.Open();
+
+                var catExist = connection.Query<Category>("Select * from CategoryMaster where Category_Name like @value", new { value = category.Category_Name }).FirstOrDefault();
+                if (catExist == null)
+                {
+                    //var identity = (ClaimsIdentity)User.Identity;
+                    //var userId = identity.Claims
+                    //    .Where(c => c.Type == ClaimTypes.Sid)
+                    //    .Select(c => c.Value);
+                    var p = new Category { Category_Code = category.Category_Code, Category_Name= category.Category_Name,Category_desc= category.Category_desc, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = category.IsActive };
+                    p.ID = connection.Query<int>(@"insert CategoryMaster(Category_Code,Category_Name,Category_desc,AddedOn,IsActive) values (@Category_Code,@Category_Name,@Category_desc,@AddedOn,@IsActive) select cast(scope_identity() as int)", p).First();
+
+                    return Json(new { Message = "Record Inserted Successfully" });
                 }
-
-
-
-
-
+                else
+                {
+                    throw new ProcessException("Category already exists");
+                }
             }
 
 

@@ -247,7 +247,7 @@ namespace StockManagementApi.Controllers
                     }
                     var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockInDetails.ProductName = currentProduct.Product_Name;
-                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
                     viewStockInDetails.CategoryName = currentCategory.Category_Name;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
                     viewStockInDetails.ProductId = item.ProductId;
@@ -284,7 +284,7 @@ namespace StockManagementApi.Controllers
 
                     var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockOutDetails.ProductName = currentProduct.Product_Name;
-                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
                     //viewStockOutDetails.CategoryName = currentCategory.Category_Name;
                     // viewStockOutDetails.BatchId = item.BatchId;
                     viewStockOutDetails.BatchName = currentBatchDetails.BatchName;
@@ -338,7 +338,7 @@ namespace StockManagementApi.Controllers
                     }
                     var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockInDetails.ProductName = currentProduct.Product_Name;
-                    var currentCategory = connection.Query<Categories>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
+                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
                     viewStockInDetails.CategoryName = currentCategory.Category_Name;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
                     viewStockInDetails.ProductId = item.ProductId;
