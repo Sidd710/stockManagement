@@ -187,8 +187,10 @@
     <Compile Include="Controllers\DepotController.cs" />
     <Compile Include="Controllers\FormationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OriginalManufacturerController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StockController.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Controllers\UnitController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\MyAuthorizationServerProvider.cs" />
@@ -201,8 +203,10 @@
     <Compile Include="Models\Depot.cs" />
     <Compile Include="Models\Formation.cs" />
     <Compile Include="Models\Command.cs" />
+    <Compile Include="Models\OriginalManufacturerList.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Stock.cs" />
+    <Compile Include="Models\SupplierList.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\UserMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
