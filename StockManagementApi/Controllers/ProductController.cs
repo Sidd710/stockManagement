@@ -1,8 +1,10 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
 using StockManagementApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -20,7 +22,7 @@ namespace StockManagementApi.Controllers
         [HttpPost]
         [ResponseType(typeof(Product))]
         
-        public async Task<IHttpActionResult> AddProduct([FromBody]ProductList value)
+        public async Task<IHttpActionResult> AddProduct([FromBody]List<ProductListNew> value)
         {
             if (!ModelState.IsValid)
             {
@@ -31,44 +33,71 @@ namespace StockManagementApi.Controllers
 
 
                 connection.Open();
-                var identity = (ClaimsIdentity)User.Identity;
-                var userId = identity.Claims.Where(c => c.Type == ClaimTypes.Sid)
-                   .Select(c => c.Value).SingleOrDefault();
-                var userExist = connection.Query<Product>("Select * from ProductMaster where Category_Id = @Category_Id and Product_Name =@Product_Name", new { Category_Id = value.Category_Id, Product_Name=value.Product_Name }).FirstOrDefault();
-                if (userExist == null)
+                for (int i = 0; i < value.Count; i++)
                 {
-                    var p = new ProductList { Product_Name = value.Product_Name, Product_Desc = value.Product_Desc, Short_Product_Desc = value.Short_Product_Desc, Admin_Remarks = value.Admin_Remarks, product_cost = value.product_cost, Product_Code = value.Product_Code, IsActive = value.IsActive, Category_Id = value.Category_Id, AddedOn = DateTime.Now,
-                        AddedBy = userId, StockQty = value.StockQty, Cat = value.Cat, GSreservre = value.GSreservre, productUnit = value.productUnit,IsProductStatus="Pending"};
-                    p.Product_ID = connection.Query<int>(@"insert ProductMaster(Product_Name,Product_Desc,Short_Product_Desc,Admin_Remarks,product_cost,Product_Code,IsActive,Category_Id,
-                        AddedOn,AddedBy,StockQty,Cat,GSreservre,productUnit,IsProductStatus) values (@Product_Name,@Product_Desc,@Short_Product_Desc,@Admin_Remarks,@product_cost,@Product_Code,@IsActive,@Category_Id,
-                        @AddedOn,@AddedBy,@StockQty,@Cat,@GSreservre,@productUnit,@IsProductStatus) select cast(scope_identity() as int)", p).First();
-                    
-                    return Json(new { Message = "Record Inserted Successfully" });
-
+                    var p = new ProductListNew
+                    {
+                        VarietyName = value[i].VarietyName,
+                        CatTypeId = value[i].CatTypeId,
+                        Unit = value[i].Unit,
+                        IsLot = value[i].IsLot,
+                        IsActive = true,
+                        GName = value[i].GName,
+                        AddedOn = DateTime.Now,
+                        AddedBy = 1,
+                        speci = value[i].speci,
+                        GSreservre = value[i].GSreservre,
+                        AdminComment = value[i].AdminComment,
+                        ProductDesc = value[i].ProductDesc,
+                    };
+                    p.Id = connection.Query<int>(@"insert ProductMaster_New(VarietyName,CatTypeId,Unit,IsLot,IsActive,GName,AddedOn,
+                        AddedBy,speci,GSreservre,AdminComment,ProductDesc) values (@VarietyName,@CatTypeId,@Unit,@IsLot,@IsActive,@GName,@AddedOn,
+                        @AddedBy,@speci,@GSreservre,@AdminComment,@ProductDesc) select cast(scope_identity() as int)", p).First();
 
                 }
-                else
-                {
-                    throw new ProcessException("Username already exists");
-                }
+                //var userExist = connection.Query<Product>("Select * from ProductMaster where Category_Id = @Category_Id and Product_Name =@Product_Name", new { Category_Id = value.Category_Id, Product_Name=value.Product_Name }).FirstOrDefault();
+                //if (userExist == null)
+                //{
+
+                return Json(new { Message = "Record Inserted Successfully" });
+
+
+                //}
+                //else
+                //{
+                //    throw new ProcessException("Username already exists");
+                //}
 
 
             }
         }
-        public Product GetAllProduct()
+        public dynamic GetAllProduct()
         {
             // var identity = (ClaimsIdentity)User.Identity;
-            Product product = new Product();
-            product.ProductList=new List<ProductList>();
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spManageProductNew", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            using (var connection = new SqlConnection(sqlConnectionString))
-            {
-                connection.Open();
-                product.ProductList = connection.Query<ProductList>("Select * from ProductMaster where IsActive =1").ToList();
-                connection.Close();
-            }
-            return product;
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+
+            return json;
+
         }
+
+        public string DataTableToJSONWithJSONNet(DataTable table)
+        {
+            string JSONString = string.Empty;
+            JSONString = JsonConvert.SerializeObject(table);
+            return JSONString;
+        }
+
         public class ProcessException : Exception
         {
             public ProcessException(string message)
