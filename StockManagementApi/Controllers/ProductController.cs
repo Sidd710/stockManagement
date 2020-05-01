@@ -71,8 +71,9 @@ namespace StockManagementApi.Controllers
 
             }
         }
-        public dynamic GetAllProduct()
+        public ProductListData GetAllProduct()
         {
+            ProductListData data = new ProductListData();
             // var identity = (ClaimsIdentity)User.Identity;
             var connection = new SqlConnection(sqlConnectionString);
             SqlCommand command = new SqlCommand("spManageProductNew", connection);
@@ -85,9 +86,10 @@ namespace StockManagementApi.Controllers
             dt.Load(command.ExecuteReader());
             var list = DataTableToJSONWithJSONNet(dt);
             dynamic json = JsonConvert.DeserializeObject(list);
+            data.ProductList = json;
 
 
-            return json;
+            return data;
 
         }
 

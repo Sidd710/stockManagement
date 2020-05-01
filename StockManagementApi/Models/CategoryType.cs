@@ -35,4 +35,8 @@ namespace StockManagementApi.Models
         public DateTime? ModifiedOn { get; set; }
         public int ModifiedBy { get; set; }
     }
+    public class CategoryListData
+    {
+        public dynamic CategoryList { get; set; }
+    }
 }

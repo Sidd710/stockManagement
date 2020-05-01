@@ -66,8 +66,9 @@ namespace StockManagementApi.Controllers
 
             }
         }
-        public dynamic GetAllDepot()
-        {               
+        public DepotListData GetAllDepot()
+        {
+            DepotListData depotListData = new DepotListData();
             var connection = new SqlConnection(sqlConnectionString);
             SqlCommand command = new SqlCommand("spManageDepot", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
@@ -80,8 +81,8 @@ namespace StockManagementApi.Controllers
             var list = DataTableToJSONWithJSONNet(dt);
             dynamic json = JsonConvert.DeserializeObject(list);
 
-
-            return json;
+            depotListData.DepotList=json;
+            return depotListData;
 
         }
         public string DataTableToJSONWithJSONNet(DataTable table)

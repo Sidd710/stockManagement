@@ -21,7 +21,7 @@ namespace StockManagementApi.Controllers
 
         // GET: api/CategoryType
         //[Authorize(Roles = "17")]
-        public dynamic GetAllCategories()
+        public CategoryListData GetAllCategories()
         {
             //List<Categories> categoryType = new List<Categories>();
             //using (var connection = new SqlConnection(sqlConnectionString))
@@ -31,21 +31,21 @@ namespace StockManagementApi.Controllers
             //    connection.Close();
             //}
             //return categoryType;
-
+            CategoryListData data = new CategoryListData();
             var connection = new SqlConnection(sqlConnectionString);
             SqlCommand command = new SqlCommand("spManageCategory", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
-
+            
             DataTable dt = new DataTable();
 
             dt.Load(command.ExecuteReader());
             var list = DataTableToJSONWithJSONNet(dt);
             dynamic json = JsonConvert.DeserializeObject(list);
+            data.CategoryList = json;
 
-
-            return json;
+            return data;
         }
 
         public dynamic GetAllCategoryTypes()
@@ -109,7 +109,7 @@ namespace StockManagementApi.Controllers
                     //var userId = identity.Claims
                     //    .Where(c => c.Type == ClaimTypes.Sid)
                     //    .Select(c => c.Value);
-                    var p = new CategoryType { Type = category.Type,Description = category.Description, /*AddedBy = userId.ToString(),*/ AddedOn =DateTime.Now, IsActive = category.IsActive, Category_ID = category.Category_ID };
+                    var p = new CategoryType { Type = category.Type,Description = category.Description, /*AddedBy = userId.ToString(),*/ AddedOn =DateTime.Now, IsActive = true, Category_ID = category.Category_ID };
                     p.ID = connection.Query<int>(@"insert CategoryType(Type,Description,AddedOn,IsActive,Category_ID) values (@Type,@Description,@AddedOn,@IsActive,@Category_ID) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
@@ -143,7 +143,7 @@ namespace StockManagementApi.Controllers
                     //var userId = identity.Claims
                     //    .Where(c => c.Type == ClaimTypes.Sid)
                     //    .Select(c => c.Value);
-                    var p = new Category { Category_Code = category.Category_Code, Category_Name= category.Category_Name,Category_desc= category.Category_desc, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = category.IsActive };
+                    var p = new Category { Category_Code = category.Category_Code, Category_Name= category.Category_Name,Category_desc= category.Category_desc, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = true };
                     p.ID = connection.Query<int>(@"insert CategoryMaster(Category_Code,Category_Name,Category_desc,AddedOn,IsActive) values (@Category_Code,@Category_Name,@Category_desc,@AddedOn,@IsActive) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });

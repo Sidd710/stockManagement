@@ -57,15 +57,19 @@ namespace StockManagementApi.Controllers
                     batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
                     BatchIds.Add(batchDetails.BatchId);
                 }
-                var receivedFrom = string.Empty;
-                if (stockIn.stock.IsCP != null && stockIn.stock.IsCP != "")
-                {
-                    receivedFrom = stockIn.stock.IsCP;
-                }
-                else
-                {
-                    receivedFrom = stockIn.stock.IsLP;
-                }
+               // var receivedFrom = string.Empty;
+                //if (stockIn.stock.IsCP != null && stockIn.stock.IsCP != "")
+                //{
+                //    receivedFrom = stockIn.stock.IsCP;
+                //}
+                //else if(stockIn.stock.IsLP!=null && stockIn.stock.IsLP!="")
+                //{
+                //    receivedFrom = stockIn.stock.IsLP;
+                //}
+                //else if (stockIn.stock.IsLT != null && stockIn.stock.IsLT != "")
+                //{
+                //    receivedFrom = stockIn.stock.IsLT;
+                //}
                 var TransferedBy = string.Empty;
                 if (stockIn.stock.IIDT != null && stockIn.stock.IIDT != "")
                 {
@@ -82,7 +86,7 @@ namespace StockManagementApi.Controllers
                     RecievedOn = stockIn.stock.RecievedOn,
                     CRVNo = stockIn.stock.CRVNo,
                     Remarks = stockIn.stock.Remarks,
-                    RecievedFrom = receivedFrom,
+                    RecievedFrom = stockIn.stock.RecievedFrom,
                     PackingMaterial = stockIn.stock.PackingMaterial,
                     OriginalManf = stockIn.stock.OriginalManf,
                     GenericName = stockIn.stock.GenericName,
@@ -97,7 +101,8 @@ namespace StockManagementApi.Controllers
                     OtherSupplier = stockIn.stock.OtherSupplier,
                     TransferedBy = TransferedBy,
                     SampleSent = stockIn.stock.SampleSent,
-                    SupplierNo = stockIn.stock.SupplierNo
+                    SupplierNo = stockIn.stock.SupplierNo,
+                    DepotId=stockIn.stock.DepotId
 
 
                 };
@@ -108,9 +113,9 @@ namespace StockManagementApi.Controllers
 
                 //};
                 stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
-                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo
+                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId
 ) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
-                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo) select cast(scope_identity() as int)", stockInDetails).First();
+                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId) select cast(scope_identity() as int)", stockInDetails).First();
 
                 //var productExist = connection.Query<ProductQuantity>("Select * from Stock_QuantityMaster where ProductId = @ProductId", new { ProductId = stockIn.stock.ProductId }).FirstOrDefault();
 
@@ -253,6 +258,8 @@ namespace StockManagementApi.Controllers
                     viewStockInDetails.ProductId = item.ProductId;
                     viewStockInDetails.Description = item.Remarks;
                     viewStockInDetails.DateOfReceipt = item.RecievedOn;
+                    viewStockInDetails.CRVNo = item.CRVNo;
+                    viewStockInDetails.Quantity = item.Quantity;
                     viewStockIns.Add(viewStockInDetails);
 
                 }
@@ -294,6 +301,7 @@ namespace StockManagementApi.Controllers
                     viewStockOutDetails.DateofDispatch = item.DateofDispatch;
                     viewStockOutDetails.StockType = item.StockType;
                     viewStockOutDetails.VoucherNumber = item.VoucherNumber;
+
                     StockOutItem.Add(viewStockOutDetails);
 
                 }

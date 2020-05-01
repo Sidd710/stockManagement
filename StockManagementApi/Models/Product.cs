@@ -51,4 +51,8 @@ namespace StockManagementApi.Models
         public int? ModifiedBy { get; set; }
 
     }
+    public class ProductListData
+    {
+        public dynamic ProductList { get; set; }
+    }
 }

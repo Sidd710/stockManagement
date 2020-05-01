@@ -35,4 +35,8 @@ namespace StockManagementApi.Models
     {
         public List<DepotList> DepotList { get; set; }
     }
-}
+    public class DepotListData
+    {
+        public dynamic DepotList { get; set; }
+    }
+} 

@@ -46,6 +46,8 @@ namespace StockManagementApi.Models
 
         [JsonProperty("ICP")]
         public string IsCP { get; set; }
+        [JsonProperty("ILT")]
+        public string IsLT { get; set; }
         [JsonProperty("IIDT")]
         public string IIDT { get; set; }
 
@@ -66,6 +68,8 @@ namespace StockManagementApi.Models
         public bool SampleSent { get; set; }
         [JsonProperty("supNu")]
         public string SupplierNo{ get; set; }
+        [JsonProperty("depotId")]
+        public int DepotId { get; set; }
 
 
 
@@ -92,6 +96,7 @@ namespace StockManagementApi.Models
         public DateTime ESL { get; set; }
         [JsonProperty("Avl")]
         public int AvailableQuantity { get; set; }
+    
 
 
     }
@@ -155,6 +160,8 @@ namespace StockManagementApi.Models
         public string Description { get; set; }
         public DateTime DateOfReceipt { get; set; }
         public List<BatchDetails> Batch { get; set; }
+        public string CRVNo { get; set; }
+        public int Quantity { get; set; }
     }
     public class ViewStockOut
     {
