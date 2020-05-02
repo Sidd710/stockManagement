@@ -61,8 +61,10 @@ namespace StockManagementApi.Controllers
 
             }
         }
-        public dynamic GetAllUnit()
-        {                 
+        public UnitListData GetAllUnit()
+        {
+            UnitListData data = new UnitListData();
+
             var connection = new SqlConnection(sqlConnectionString);
             SqlCommand command = new SqlCommand("spManageUnit", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
@@ -74,9 +76,9 @@ namespace StockManagementApi.Controllers
             dt.Load(command.ExecuteReader());
             var list = DataTableToJSONWithJSONNet(dt);
             dynamic json = JsonConvert.DeserializeObject(list);
+            data.UnitList = json;
 
-
-            return json;
+            return data;
 
         }
 
@@ -103,5 +105,6 @@ namespace StockManagementApi.Controllers
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
         }
+
     }
 }

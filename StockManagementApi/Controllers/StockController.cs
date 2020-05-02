@@ -70,15 +70,15 @@ namespace StockManagementApi.Controllers
                 //{
                 //    receivedFrom = stockIn.stock.IsLT;
                 //}
-                var TransferedBy = string.Empty;
-                if (stockIn.stock.IIDT != null && stockIn.stock.IIDT != "")
-                {
-                    TransferedBy = stockIn.stock.IIDT;
-                }
-                else
-                {
-                    TransferedBy = stockIn.stock.IICT;
-                }
+                //var TransferedBy = string.Empty;
+                //if (stockIn.stock.IIDT != null && stockIn.stock.IIDT != "")
+                //{
+                //    TransferedBy = "IDT";
+                //}
+                //else
+                //{
+                //    TransferedBy = "ICT";
+                //}
 
                 var stockInDetails = new Stock
                 {
@@ -99,10 +99,14 @@ namespace StockManagementApi.Controllers
                     IsFromMobile = stockIn.stock.IsFromMobile,
                     ATNo = stockIn.stock.ATNo,
                     OtherSupplier = stockIn.stock.OtherSupplier,
-                    TransferedBy = TransferedBy,
+                  //  TransferedBy = TransferedBy,
                     SampleSent = stockIn.stock.SampleSent,
                     SupplierNo = stockIn.stock.SupplierNo,
-                    DepotId=stockIn.stock.DepotId
+                    DepotId=stockIn.stock.DepotId,
+                    IsCP=stockIn.stock.IsCP,
+                    IsLP = stockIn.stock.IsLP,
+                    IsIDT = stockIn.stock.IsIDT,
+                    IsICT = stockIn.stock.IsICT,
 
 
                 };
@@ -113,9 +117,9 @@ namespace StockManagementApi.Controllers
 
                 //};
                 stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
-                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId
+                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT
 ) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
-                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId) select cast(scope_identity() as int)", stockInDetails).First();
+                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId,@IsCP,@IsLP,@IsIDT,@IsICT) select cast(scope_identity() as int)", stockInDetails).First();
 
                 //var productExist = connection.Query<ProductQuantity>("Select * from Stock_QuantityMaster where ProductId = @ProductId", new { ProductId = stockIn.stock.ProductId }).FirstOrDefault();
 
@@ -190,7 +194,12 @@ namespace StockManagementApi.Controllers
                             Quantity = item.Quantity,
                             ProductId = stockOut.stockOut.ProductId,
                             VoucherNumber = stockOut.stockOut.VoucherNumber,
-                            StockType = stockOut.stockOut.StockType
+                            StockType = stockOut.stockOut.StockType,
+                            IsAWS=stockOut.stockOut.IsAWS,
+                            IsICT = stockOut.stockOut.IsICT,
+                            IsIDT = stockOut.stockOut.IsIDT,
+                            DepotId = stockOut.stockOut.DepotId,
+                            UnitId = stockOut.stockOut.UnitId,
                         };
                         var result = connection.Execute(updateQuery, new
                         {
@@ -198,7 +207,7 @@ namespace StockManagementApi.Controllers
                             item.BID,
 
                         });
-                        p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType) select cast(scope_identity() as int)", p).First();
+                        p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType,IsAWS,IsICT,IsIDT,DepotId,UnitId) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType,@IsAWS,@IsICT,@IsIDT,@DepotId,@UnitId) select cast(scope_identity() as int)", p).First();
 
 
 
@@ -260,6 +269,7 @@ namespace StockManagementApi.Controllers
                     viewStockInDetails.DateOfReceipt = item.RecievedOn;
                     viewStockInDetails.CRVNo = item.CRVNo;
                     viewStockInDetails.Quantity = item.Quantity;
+                    
                     viewStockIns.Add(viewStockInDetails);
 
                 }

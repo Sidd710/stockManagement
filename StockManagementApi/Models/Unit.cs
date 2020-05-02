@@ -27,4 +27,8 @@ namespace StockManagementApi.Models
     {
         public List<UnitList> UnitList { get; set; }
     }
+    public class UnitListData
+    {
+        public dynamic UnitList { get; set; }
+    }
 }

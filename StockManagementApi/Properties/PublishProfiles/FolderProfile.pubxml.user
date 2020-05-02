@@ -247,10 +247,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/08/2020 10:44:40</publishTime>
     </File>
     <File Include="bin/StockManagementApi.dll">
-      <publishTime>05/01/2020 17:37:07</publishTime>
+      <publishTime>05/02/2020 13:45:46</publishTime>
     </File>
     <File Include="bin/StockManagementApi.pdb">
-      <publishTime>05/01/2020 17:37:07</publishTime>
+      <publishTime>05/02/2020 13:45:46</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>04/08/2020 10:44:39</publishTime>
@@ -379,7 +379,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/08/2020 10:44:39</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>05/01/2020 15:32:58</publishTime>
+      <publishTime>01/05/2020 15:32:58</publishTime>
     </File>
   </ItemGroup>
 </Project>

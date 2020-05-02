@@ -45,16 +45,17 @@ namespace StockManagementApi.Models
         public bool IsFromMobile { get; set; }
 
         [JsonProperty("ICP")]
-        public string IsCP { get; set; }
-        [JsonProperty("ILT")]
-        public string IsLT { get; set; }
-        [JsonProperty("IIDT")]
-        public string IIDT { get; set; }
-
+        public bool IsCP { get; set; }
         [JsonProperty("ILP")]
-        public string IsLP { get; set; }
+        public bool IsLP { get; set; }
+        [JsonProperty("ILT")]
+        public bool IsLT { get; set; }
+        [JsonProperty("IIDT")]
+        public bool IsIDT { get; set; }
+
+       
         [JsonProperty("IICT")]
-        public string IICT { get; set; }
+        public string IsICT { get; set; }
 
         [JsonProperty("SuId")]
         public int SupplierId { get; set; }
@@ -136,6 +137,20 @@ namespace StockManagementApi.Models
         public string VoucherNumber { get; set; }
         [JsonProperty("Sty")]
         public string StockType { get; set; }
+        [JsonProperty("IIDT")]
+        public bool IsIDT { get; set; }
+
+
+        [JsonProperty("IICT")]
+        public bool IsICT { get; set; }
+
+        [JsonProperty("IAWS")]
+        public bool IsAWS { get; set; }
+        [JsonProperty("depotId")]
+        public int DepotId { get; set; }
+        [JsonProperty("UId")]
+        public int UnitId { get; set; }
+
 
     }
     public class StockOutParameter
