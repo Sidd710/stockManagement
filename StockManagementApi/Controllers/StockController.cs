@@ -255,12 +255,17 @@ namespace StockManagementApi.Controllers
                         tempBatchDetails.Esl = currentBatchDetails.Esl;
                         tempBatchDetails.Quantity = currentBatchDetails.Quantity;
                         tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
-
+                        tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                        tempBatchDetails.SampleSentQty = currentBatchDetails.SampleSentQty;
+                        tempBatchDetails.MFGDate = currentBatchDetails.MFGDate;
+                        tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
+                        tempBatchDetails.Esl = currentBatchDetails.Esl;
 
                         viewStockInDetails.Batch.Add(tempBatchDetails);
                     }
                     var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockInDetails.ProductName = currentProduct.Product_Name;
+                    
                     var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
                     viewStockInDetails.CategoryName = currentCategory.Category_Name;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
@@ -269,6 +274,27 @@ namespace StockManagementApi.Controllers
                     viewStockInDetails.DateOfReceipt = item.RecievedOn;
                     viewStockInDetails.CRVNo = item.CRVNo;
                     viewStockInDetails.Quantity = item.Quantity;
+                    viewStockInDetails.AccountingUnit = currentProduct.productUnit;
+                    if (item.IsCP == true)
+                    {
+                        viewStockInDetails.CPLPNumber = "CP-" + item.Remarks;
+                    }
+                    if (item.IsLP == true)
+                    {
+                        viewStockInDetails.CPLPNumber = "LP-" + item.Remarks;
+                    }
+                    if (item.IsLT == true)
+                    {
+                        viewStockInDetails.CPLPNumber = "LT-" + item.Remarks;
+                    }
+                    if (item.IsIDT == true)
+                    {
+                        viewStockInDetails.IDTICTNumber = "IDT-" + item.Remarks;
+                    }
+                    if (item.IsICT == true)
+                    {
+                        viewStockInDetails.IDTICTNumber = "ICT-" + item.Remarks;
+                    }
                     
                     viewStockIns.Add(viewStockInDetails);
 
@@ -298,11 +324,24 @@ namespace StockManagementApi.Controllers
 
 
                     var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @BID", new { BID = BID }).FirstOrDefault();
+                    BatchDetails tempBatchDetails = new BatchDetails();
+                    viewStockOutDetails.Batch = new List<BatchDetails>();
+                    tempBatchDetails.BID = currentBatchDetails.BID;
+                    tempBatchDetails.BatchName = currentBatchDetails.BatchName;
+                    tempBatchDetails.Esl = currentBatchDetails.Esl;
+                    tempBatchDetails.Quantity = currentBatchDetails.Quantity;
+                    tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
+                    tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                    tempBatchDetails.SampleSentQty = currentBatchDetails.SampleSentQty;
+                    tempBatchDetails.MFGDate = currentBatchDetails.MFGDate;
+                    tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
+                    tempBatchDetails.Esl = currentBatchDetails.Esl;
 
+                    viewStockOutDetails.Batch.Add(tempBatchDetails);
                     var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockOutDetails.ProductName = currentProduct.Product_Name;
                     var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
-                    //viewStockOutDetails.CategoryName = currentCategory.Category_Name;
+                    viewStockOutDetails.CategoryName = currentCategory.Category_Name;
                     // viewStockOutDetails.BatchId = item.BatchId;
                     viewStockOutDetails.BatchName = currentBatchDetails.BatchName;
                     viewStockOutDetails.ProductId = item.ProductId;
@@ -311,7 +350,19 @@ namespace StockManagementApi.Controllers
                     viewStockOutDetails.DateofDispatch = item.DateofDispatch;
                     viewStockOutDetails.StockType = item.StockType;
                     viewStockOutDetails.VoucherNumber = item.VoucherNumber;
-
+                    viewStockOutDetails.AccountingUnit = currentProduct.productUnit;
+                    if (item.IsAWS == true)
+                    {
+                        viewStockOutDetails.IDTReferenceNumber = "AWS-" + item.Remarks;
+                    }
+                    if (item.IsICT == true)
+                    {
+                        viewStockOutDetails.IDTReferenceNumber = "ICT-" + item.Remarks;
+                    }
+                    if (item.IsIDT == true)
+                    {
+                        viewStockOutDetails.IDTReferenceNumber = "IDT-" + item.Remarks;
+                    }
                     StockOutItem.Add(viewStockOutDetails);
 
                 }

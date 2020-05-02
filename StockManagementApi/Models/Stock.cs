@@ -24,7 +24,7 @@ namespace StockManagementApi.Models
         [JsonProperty("Rcf")]
         public string RecievedFrom { get; set; }
         [JsonProperty("Pmn")]
-        public string PackingMaterial{ get; set; }
+        public string PackingMaterial { get; set; }
         [JsonProperty("Omn")]
         public string OriginalManf { get; set; }
         [JsonProperty("Gn")]
@@ -53,9 +53,9 @@ namespace StockManagementApi.Models
         [JsonProperty("IIDT")]
         public bool IsIDT { get; set; }
 
-       
+
         [JsonProperty("IICT")]
-        public string IsICT { get; set; }
+        public bool IsICT { get; set; }
 
         [JsonProperty("SuId")]
         public int SupplierId { get; set; }
@@ -68,7 +68,7 @@ namespace StockManagementApi.Models
         [JsonProperty("SS")]
         public bool SampleSent { get; set; }
         [JsonProperty("supNu")]
-        public string SupplierNo{ get; set; }
+        public string SupplierNo { get; set; }
         [JsonProperty("depotId")]
         public int? DepotId { get; set; }
 
@@ -97,7 +97,7 @@ namespace StockManagementApi.Models
         public DateTime ESL { get; set; }
         [JsonProperty("Avl")]
         public int AvailableQuantity { get; set; }
-    
+
 
 
     }
@@ -155,7 +155,7 @@ namespace StockManagementApi.Models
     }
     public class StockOutParameter
     {
-        public List <StockOutBatchList> stockOutBatchList { get; set; }
+        public List<StockOutBatchList> stockOutBatchList { get; set; }
         public StockOut stockOut { get; set; }
     }
     public class StockOutBatchList
@@ -177,6 +177,15 @@ namespace StockManagementApi.Models
         public List<BatchDetails> Batch { get; set; }
         public string CRVNo { get; set; }
         public int Quantity { get; set; }
+        public string AccountingUnit { get; set; }
+        public bool IsCP { get; set; }
+        public bool IsLP { get; set; }
+        public bool IsLT { get; set; }
+        public bool IsIDT { get; set; }
+        public string IsICT { get; set; }
+        public string CPLPNumber { get; set; }
+        public string IDTICTNumber { get; set; }
+
     }
     public class ViewStockOut
     {
@@ -184,6 +193,8 @@ namespace StockManagementApi.Models
         public int BatchId { get; set; }
         public int ProductId { get; set; }
         public string ProductName { get; set; }
+        public string CategoryName { get; set; }
+        public string AccountingUnit { get; set; }
         public int Quantity { get; set; }
         public string StockType { get; set; }
         public string Remarks { get; set; }
@@ -191,6 +202,11 @@ namespace StockManagementApi.Models
         public DateTime DateOfReceipt { get; set; }
         public DateTime DateofDispatch { get; set; }
         public String BatchName { get; set; }
+        public bool IsIDT { get; set; }
+        public bool IsICT { get; set; }
+        public bool IsAWS { get; set; }
+        public string IDTReferenceNumber { get; set; }
+        public List<BatchDetails> Batch { get; set; }
     }
     public class AvailableStock
     {
@@ -201,7 +217,7 @@ namespace StockManagementApi.Models
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public DateTime DateOfReceipt { get; set; }
-       
+
         public List<BatchDetails> Batch { get; set; }
 
     }
