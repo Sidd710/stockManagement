@@ -70,7 +70,7 @@ namespace StockManagementApi.Models
         [JsonProperty("supNu")]
         public string SupplierNo{ get; set; }
         [JsonProperty("depotId")]
-        public int DepotId { get; set; }
+        public int? DepotId { get; set; }
 
 
 
@@ -147,9 +147,9 @@ namespace StockManagementApi.Models
         [JsonProperty("IAWS")]
         public bool IsAWS { get; set; }
         [JsonProperty("depotId")]
-        public int DepotId { get; set; }
+        public int? DepotId { get; set; }
         [JsonProperty("UId")]
-        public int UnitId { get; set; }
+        public int? UnitId { get; set; }
 
 
     }
