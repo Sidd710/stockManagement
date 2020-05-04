@@ -88,7 +88,38 @@ namespace StockManagementApi.Controllers
             return json;
 
         }
-        public string DataTableToJSONWithJSONNet(DataTable table)
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteFormation([FromBody]Object Id)
+        {
+            var commandId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CommandExist = connection.Query<FormationList>("Select * from Formation where Id = @Id", new { Id = commandId }).FirstOrDefault();
+                if (CommandExist == null)
+                {
+                    throw new ProcessException("Selected formation not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE Formation Set IsActive = @IsActive where Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = commandId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        } 
+        private string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
