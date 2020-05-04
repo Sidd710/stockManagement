@@ -85,7 +85,39 @@ namespace StockManagementApi.Controllers
             return depotListData;
 
         }
-        public string DataTableToJSONWithJSONNet(DataTable table)
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteDepot([FromBody]Object Id)
+        {
+            var depotId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CommandExist = connection.Query<FormationList>("Select * from depumaster where Depu_Id = @Id", new { Id = depotId }).FirstOrDefault();
+                if (CommandExist == null)
+                {
+                    throw new ProcessException("Selected depot not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE DepuMaster Set IsActive = @IsActive where Depu_Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = depotId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
+
+        private string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);

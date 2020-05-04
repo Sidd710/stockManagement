@@ -99,7 +99,39 @@ namespace StockManagementApi.Controllers
 
             return json;
         }
-        public string DataTableToJSONWithJSONNet(DataTable table)
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteUnit([FromBody]Object Id)
+        {
+            var unitId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CommandExist = connection.Query<FormationList>("Select * from UnitMaster where Unit_Id = @Id", new { Id = unitId }).FirstOrDefault();
+                if (CommandExist == null)
+                {
+                    throw new ProcessException("Selected unit not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE UnitMaster Set IsActive = @IsActive where Unit_Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = unitId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
+
+        private string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
