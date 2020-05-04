@@ -90,21 +90,10 @@ namespace StockManagementApi.Controllers
                     throw new ProcessException("Selected command not exists");
                 }
                 else
-                {
-                    //var a = connection.Query(@"update CommandMaster Set IsActive = @IsActive where Id = @Id", new { IsActive = false, Id = commandId }).First();
+                {                     
                     string updateQuery = @"UPDATE CommandMaster Set IsActive = @IsActive where Id = @Id";
                     var result = connection.Execute(updateQuery, new { IsActive = false, Id = commandId });
-                    //try
-                    //{
-
-                    //}
-                    //catch (Exception ex)
-                    //{
-
-                    //    throw;
-                    //}
-
-
+                   
                     return Json(new { Message = "Record deleted successfully!" });
                 }
 
