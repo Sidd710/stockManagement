@@ -28,8 +28,8 @@ namespace StockManagementApi.Controllers
 
 
                 connection.Open();
-               
-                var CommandExist = connection.Query<CommandList>("Select * from CommandMaster where Name = @Name" , new { Name = value.Name}).FirstOrDefault();
+
+                var CommandExist = connection.Query<CommandList>("Select * from CommandMaster where Name = @Name", new { Name = value.Name }).FirstOrDefault();
                 if (CommandExist == null)
                 {
                     var p = new CommandList
@@ -37,9 +37,9 @@ namespace StockManagementApi.Controllers
                         Name = value.Name,
                         Descripition = value.Descripition,
                         IsActive = true,
-                        AddedOn=DateTime.Now,
-                        UndatedOn= DateTime.Now
-                        
+                        AddedOn = DateTime.Now,
+                        UndatedOn = DateTime.Now
+
                     };
                     p.Id = connection.Query<int>(@"insert CommandMaster(Name,Descripition,IsActive,AddedOn,UndatedOn) values (@Name,@Descripition,@IsActive,@AddedOn,@UndatedOn) select cast(scope_identity() as int)", p).First();
 
@@ -68,6 +68,48 @@ namespace StockManagementApi.Controllers
                 connection.Close();
             }
             return command;
+        }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteCommand([FromBody]Object Id)
+        {
+            var commandId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CommandExist = connection.Query<CommandList>("Select * from CommandMaster where Id = @Id", new { Id = commandId }).FirstOrDefault();
+                if (CommandExist == null)
+                {
+                    throw new ProcessException("Selected command not exists");
+                }
+                else
+                {
+                    //var a = connection.Query(@"update CommandMaster Set IsActive = @IsActive where Id = @Id", new { IsActive = false, Id = commandId }).First();
+                    string updateQuery = @"UPDATE CommandMaster Set IsActive = @IsActive where Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = commandId });
+                    //try
+                    //{
+
+                    //}
+                    //catch (Exception ex)
+                    //{
+
+                    //    throw;
+                    //}
+
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
         }
     }
 }
