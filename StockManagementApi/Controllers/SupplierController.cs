@@ -56,6 +56,37 @@ namespace StockManagementApi.Controllers
 
             }
         }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteSupplier([FromBody]Object Id)
+        {
+            var categoryId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CategoryExist = connection.Query<FormationList>("Select * from Supplier where Id = @Id", new { Id = categoryId }).FirstOrDefault();
+                if (CategoryExist == null)
+                {
+                    throw new ProcessException("Selected supplier not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE Supplier Set IsActivated = @IsActive where Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = categoryId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
         public dynamic GetAllSupplier()
         {
             var connection = new SqlConnection(sqlConnectionString);

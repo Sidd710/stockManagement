@@ -74,7 +74,39 @@ namespace StockManagementApi.Controllers
 
         }
 
-        public string DataTableToJSONWithJSONNet(DataTable table)
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteOriginalManufacturer([FromBody]Object Id)
+        {
+            var categoryId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CategoryExist = connection.Query<FormationList>("Select * from OriginalManufacture where Id = @Id", new { Id = categoryId }).FirstOrDefault();
+                if (CategoryExist == null)
+                {
+                    throw new ProcessException("Selected original manufacturer not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE OriginalManufacture Set IsActivated = @IsActive where Id = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = categoryId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
+
+        private string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);

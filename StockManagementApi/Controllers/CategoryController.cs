@@ -217,5 +217,67 @@ namespace StockManagementApi.Controllers
                 throw;
             }
         }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteCategory([FromBody]Object Id)
+        {
+            var categoryId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CategoryExist = connection.Query<FormationList>("Select * from CategoryMaster where ID = @Id", new { Id = categoryId }).FirstOrDefault();
+                if (CategoryExist == null)
+                {
+                    throw new ProcessException("Selected category not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE CategoryMaster Set IsActive = @IsActive where ID = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = categoryId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteCategoryType([FromBody]Object Id)
+        {
+            var categoryTypeId = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var CategoryTypeExist = connection.Query<FormationList>("Select * from CategoryType where ID = @Id", new { Id = categoryTypeId }).FirstOrDefault();
+                if (CategoryTypeExist == null)
+                {
+                    throw new ProcessException("Selected category type not exists");
+                }
+                else
+                {
+                    string updateQuery = @"UPDATE CategoryType Set IsActive = @IsActive where ID = @Id";
+                    var result = connection.Execute(updateQuery, new { IsActive = false, Id = categoryTypeId });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+
+
+            }
+        }
     }
 }
