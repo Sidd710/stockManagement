@@ -22,135 +22,97 @@ namespace StockManagementApi.Controllers
 
         public async Task<IHttpActionResult> AddStock([FromBody]StockIn stockIn)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-            using (var connection = new SqlConnection(sqlConnectionString))
-            {
-
-
-                connection.Open();
-                var identity = (ClaimsIdentity)User.Identity;
-                var userId = identity.Claims.Where(c => c.Type == ClaimTypes.Sid)
-                   .Select(c => c.Value).SingleOrDefault();
-                List<int> BatchIds = new List<int>();
-                int quantity = 0;
-                foreach (var item in stockIn.Batch)
+                if (!ModelState.IsValid)
                 {
-                    var batchDetails = new Batch
-                    {
-                        BatchName = item.BatchName,
-                        Quantity = item.Quantity,
-                        WarehouseID = item.WarehouseID,
-                        MfgDate = item.MfgDate,
-                        ExpDate = item.ExpDate,
-                        ESL = item.ESL,
-                        AvailableQuantity = item.Quantity,
-                        BatchCode = item.BatchCode,
-                        BatchNo = item.BatchNo
+                    return BadRequest(ModelState);
+                }
+                using (var connection = new SqlConnection(sqlConnectionString))
+                {
 
+
+                    connection.Open();
+                    var identity = (ClaimsIdentity)User.Identity;
+                    var userId = identity.Claims.Where(c => c.Type == ClaimTypes.Sid)
+                       .Select(c => c.Value).SingleOrDefault();
+                    List<int> BatchIds = new List<int>();
+                    int quantity = 0;
+                    foreach (var item in stockIn.Batch)
+                    {
+                        var batchDetails = new Batch
+                        {
+                            BatchName = item.BatchName,
+                            Quantity = item.Quantity,
+                            WarehouseID = item.WarehouseID,
+                            MfgDate = item.MfgDate,
+                            ExpDate = item.ExpDate,
+                            ESL = item.ESL,
+                            AvailableQuantity = item.Quantity,
+                            BatchCode = item.BatchCode,
+                            BatchNo = item.BatchNo
+
+
+
+                        };
+                        quantity = quantity + item.Quantity;
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
+                        BatchIds.Add(batchDetails.BatchId);
+                    }
+                   
+                    var stockInDetails = new Stock
+                    {
+                        BatchIdFromMobile = String.Join(",", BatchIds),
+                        RecievedOn = stockIn.stock.RecievedOn,
+                        CRVNo = stockIn.stock.CRVNo,
+                        Remarks = stockIn.stock.Remarks,
+                        RecievedFrom = stockIn.stock.RecievedFrom,
+                        PackingMaterial = stockIn.stock.PackingMaterial,
+                        OriginalManf = stockIn.stock.OriginalManf,
+                        GenericName = stockIn.stock.GenericName,
+                        Weight = stockIn.stock.Weight,
+                        AddedOn = DateTime.Now,
+                        SupplierId = stockIn.stock.SupplierId,
+                        //  IsActive = stockIn.stock.IsActive,
+                        ProductId = stockIn.stock.ProductId,
+                        Quantity = stockIn.stock.Quantity,
+                        IsFromMobile = stockIn.stock.IsFromMobile,
+                        ATNo = stockIn.stock.ATNo,
+                        OtherSupplier = stockIn.stock.OtherSupplier,
+                        //  TransferedBy = TransferedBy,
+                        SampleSent = stockIn.stock.SampleSent,
+                        SupplierNo = stockIn.stock.SupplierNo,
+                        DepotId = stockIn.stock.DepotId,
+                        IsCP = stockIn.stock.IsCP,
+                        IsLP = stockIn.stock.IsLP,
+                        IsIDT = stockIn.stock.IsIDT,
+                        IsICT = stockIn.stock.IsICT,
 
 
                     };
-                    quantity = quantity + item.Quantity;
-                    batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
-                    BatchIds.Add(batchDetails.BatchId);
-                }
-               // var receivedFrom = string.Empty;
-                //if (stockIn.stock.IsCP != null && stockIn.stock.IsCP != "")
-                //{
-                //    receivedFrom = stockIn.stock.IsCP;
-                //}
-                //else if(stockIn.stock.IsLP!=null && stockIn.stock.IsLP!="")
-                //{
-                //    receivedFrom = stockIn.stock.IsLP;
-                //}
-                //else if (stockIn.stock.IsLT != null && stockIn.stock.IsLT != "")
-                //{
-                //    receivedFrom = stockIn.stock.IsLT;
-                //}
-                //var TransferedBy = string.Empty;
-                //if (stockIn.stock.IIDT != null && stockIn.stock.IIDT != "")
-                //{
-                //    TransferedBy = "IDT";
-                //}
-                //else
-                //{
-                //    TransferedBy = "ICT";
-                //}
-
-                var stockInDetails = new Stock
-                {
-                    BatchIdFromMobile = String.Join(",", BatchIds),
-                    RecievedOn = stockIn.stock.RecievedOn,
-                    CRVNo = stockIn.stock.CRVNo,
-                    Remarks = stockIn.stock.Remarks,
-                    RecievedFrom = stockIn.stock.RecievedFrom,
-                    PackingMaterial = stockIn.stock.PackingMaterial,
-                    OriginalManf = stockIn.stock.OriginalManf,
-                    GenericName = stockIn.stock.GenericName,
-                    Weight = stockIn.stock.Weight,
-                    AddedOn = DateTime.Now,
-                    SupplierId = stockIn.stock.SupplierId,
-                    //  IsActive = stockIn.stock.IsActive,
-                    ProductId = stockIn.stock.ProductId,
-                    Quantity = stockIn.stock.Quantity,
-                    IsFromMobile = stockIn.stock.IsFromMobile,
-                    ATNo = stockIn.stock.ATNo,
-                    OtherSupplier = stockIn.stock.OtherSupplier,
-                  //  TransferedBy = TransferedBy,
-                    SampleSent = stockIn.stock.SampleSent,
-                    SupplierNo = stockIn.stock.SupplierNo,
-                    DepotId=stockIn.stock.DepotId,
-                    IsCP=stockIn.stock.IsCP,
-                    IsLP = stockIn.stock.IsLP,
-                    IsIDT = stockIn.stock.IsIDT,
-                    IsICT = stockIn.stock.IsICT,
-
-
-                };
-                //var productQuantity = new ProductQuantity
-                //{
-                //    ProductId = stockIn.stock.ProductId,
-                //    Quantity = quantity
-
-                //};
-                stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
+                    
+                    stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
                                          PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT
 ) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
                                          @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId,@IsCP,@IsLP,@IsIDT,@IsICT) select cast(scope_identity() as int)", stockInDetails).First();
 
-                //var productExist = connection.Query<ProductQuantity>("Select * from Stock_QuantityMaster where ProductId = @ProductId", new { ProductId = stockIn.stock.ProductId }).FirstOrDefault();
+                    
 
-                //if (productExist == null)
-                //{
-                //    var id = connection.Query<int>(@"insert Stock_QuantityMaster(ProductId,Quantity)values(@ProductId,@Quantity)select cast(scope_identity() as int)", productQuantity).First();
-
-                //}
-                //else
-                //{
-                //    int totalQuantity = productExist.Quantity + quantity;
-                //    // var id = connection.Query<int>(@"update Stock_QuantityMaster set Quantity = @totalQuantity where ProductId = @ProductId", new { totalQuantity, ProductId = stockIn.stock.ProductId }).First();
-                //    string updateQuery = @"UPDATE Stock_QuantityMaster SET Quantity = @totalQuantity WHERE ProductId = @ProductId";
-
-                //    var result = connection.Execute(updateQuery, new
-                //    {
-                //        totalQuantity,
-                //        stockIn.stock.ProductId,
-
-                //    });
-
-                //}
+                    return Json(new { Message = "Record Inserted Successfully" });
 
 
-                return Json(new { Message = "Record Inserted Successfully" });
-
-
-
-
-
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            
+
+
+
+            
         }
 
         public async Task<IHttpActionResult> StockOut([FromBody] StockOutParameter stockOut)
@@ -236,7 +198,7 @@ namespace StockManagementApi.Controllers
             {
 
                 connection.Open();
-                StockInList = connection.Query<Stock>("Select * from StockMaster").ToList();
+                StockInList = connection.Query<Stock>("Select * from StockMaster").OrderBy(t=>t.AddedOn).ToList();
                 foreach (var item in StockInList)
                 {
                     ViewStockIn viewStockInDetails = new ViewStockIn();
@@ -420,6 +382,93 @@ namespace StockManagementApi.Controllers
             }
             return viewStockIns;
 
+        }
+
+        public async Task<IHttpActionResult> AddStockList([FromBody]List<StockIn> stockInList)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+                foreach (var stockIn in stockInList)
+                {
+
+                    List<int> BatchIds = new List<int>();
+                    int quantity = 0;
+                    foreach (var item in stockIn.Batch)
+                    {
+                        var batchDetails = new Batch
+                        {
+                            BatchName = item.BatchName,
+                            Quantity = item.Quantity,
+                            WarehouseID = item.WarehouseID,
+                            MfgDate = item.MfgDate,
+                            ExpDate = item.ExpDate,
+                            ESL = item.ESL,
+                            AvailableQuantity = item.Quantity,
+                            BatchCode = item.BatchCode,
+                            BatchNo = item.BatchNo
+
+
+
+                        };
+                        quantity = quantity + item.Quantity;
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
+                        BatchIds.Add(batchDetails.BatchId);
+                    }
+
+
+                    var stockInDetails = new Stock
+                    {
+                        BatchIdFromMobile = String.Join(",", BatchIds),
+                        RecievedOn = stockIn.stock.RecievedOn,
+                        CRVNo = stockIn.stock.CRVNo,
+                        Remarks = stockIn.stock.Remarks,
+                        RecievedFrom = stockIn.stock.RecievedFrom,
+                        PackingMaterial = stockIn.stock.PackingMaterial,
+                        OriginalManf = stockIn.stock.OriginalManf,
+                        GenericName = stockIn.stock.GenericName,
+                        Weight = stockIn.stock.Weight,
+                        AddedOn = DateTime.Now,
+                        SupplierId = stockIn.stock.SupplierId,
+                        //  IsActive = stockIn.stock.IsActive,
+                        ProductId = stockIn.stock.ProductId,
+                        Quantity = stockIn.stock.Quantity,
+                        IsFromMobile = stockIn.stock.IsFromMobile,
+                        ATNo = stockIn.stock.ATNo,
+                        OtherSupplier = stockIn.stock.OtherSupplier,
+                        //  TransferedBy = TransferedBy,
+                        SampleSent = stockIn.stock.SampleSent,
+                        SupplierNo = stockIn.stock.SupplierNo,
+                        DepotId = stockIn.stock.DepotId,
+                        IsCP = stockIn.stock.IsCP,
+                        IsLP = stockIn.stock.IsLP,
+                        IsIDT = stockIn.stock.IsIDT,
+                        IsICT = stockIn.stock.IsICT,
+
+
+                    };
+
+                    stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
+                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT
+) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
+                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId,@IsCP,@IsLP,@IsIDT,@IsICT) select cast(scope_identity() as int)", stockInDetails).First();
+
+
+
+                }
+                    return Json(new { Message = "Record Inserted Successfully" });
+
+
+
+
+
+            }
         }
     }
 }

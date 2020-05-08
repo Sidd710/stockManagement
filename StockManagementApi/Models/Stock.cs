@@ -30,7 +30,7 @@ namespace StockManagementApi.Models
         [JsonProperty("Gn")]
         public string GenericName { get; set; }
         [JsonProperty("We")]
-        public decimal Weight { get; set; }
+        public decimal? Weight { get; set; }
         [JsonProperty("Aby")]
         public int AddedBy { get; set; }
         [JsonProperty("Qua")]
