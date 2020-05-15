@@ -187,6 +187,7 @@
     <Compile Include="Controllers\DepotController.cs" />
     <Compile Include="Controllers\FormationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IDTICTController.cs" />
     <Compile Include="Controllers\OriginalManufacturerController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StockController.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Models\Depot.cs" />
     <Compile Include="Models\Formation.cs" />
     <Compile Include="Models\Command.cs" />
+    <Compile Include="Models\IdtIctInModel.cs" />
     <Compile Include="Models\OriginalManufacturerList.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Stock.cs" />
