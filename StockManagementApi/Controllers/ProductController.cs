@@ -26,7 +26,7 @@ namespace StockManagementApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                    return BadRequest(ModelState);
             }
             using (var connection = new SqlConnection(sqlConnectionString))
             {

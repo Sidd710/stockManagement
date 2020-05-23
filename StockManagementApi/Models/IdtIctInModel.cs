@@ -14,6 +14,7 @@ namespace StockManagementApi.Models
 
     public class firstForm
     {
+        public int Id { get; set; }
         public DateTime DateOfEntry { get; set; }
         public string IdtIctType { get; set; }
         public string ReferenceNumber { get; set; }
@@ -39,5 +40,7 @@ namespace StockManagementApi.Models
         public int productId { get; set; }
         public int depotId { get; set; }
         public string quantity { get; set; }
+        public string date { get; set; }
+        public int IdtIctMasterId { get; set; }
     }
 }
