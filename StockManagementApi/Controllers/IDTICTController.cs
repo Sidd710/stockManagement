@@ -60,5 +60,41 @@ namespace StockManagementApi.Controllers
                 }
             }
         }
+        [HttpGet]
+        public dynamic ViewIdt()
+        {
+            CPLTMaster cpLtdata = new CPLTMaster();
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spManageIdtIct", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+            //  cpLtdata = json;
+            return json;
+
+        }
+        public dynamic GetByIdt(int Id)
+        {
+            IdtDetails idtData = new IdtDetails();
+            var connection = new SqlConnection(sqlConnectionString);
+            idtData.IdtIcTMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
+            var IdtIctMasterId = Id;
+            idtData.IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId = @IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
+            return idtData;
+        }
+        private string DataTableToJSONWithJSONNet(DataTable table)
+        {
+            string JSONString = string.Empty;
+            JSONString = JsonConvert.SerializeObject(table);
+            return JSONString;
+        }
     }
+    
 }
