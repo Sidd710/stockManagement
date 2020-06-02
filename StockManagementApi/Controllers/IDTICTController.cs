@@ -167,80 +167,80 @@ namespace StockManagementApi.Controllers
             return idtData;
         }
 
-        //public async Task<IHttpActionResult> EditIdtIctIn([FromBody] EditIdtIctInModel value)
-        //{
-        //    var Id = Convert.ToInt32(value.depotProdcutValueList[0].Id);
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    using (TransactionScope scope = new TransactionScope())
-        //    using (var connection = new SqlConnection(sqlConnectionString))
-        //    {
+        public async Task<IHttpActionResult> EditIdtIctIn([FromBody] EditIdtIctInModel value)
+        {
+            var Id = Convert.ToInt32(value.depotProdcutValueList[0].Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
 
 
-        //        connection.Open();
+                connection.Open();
 
-        //        var IdtIctExist = connection.Query<int>("Select * from IdtIcTMaster where ID = @Id", new { Id = Id }).FirstOrDefault();
-        //        if (IdtIctExist == null)
-        //        {
-        //            throw new ProcessException("Selected Idt/Ict not exists");
-        //        }
-        //        else
-        //        {
-        //            //var p = new firstForm
-        //            //{
-        //            var IdtIctType = value.firstForm.IdtIctType;
-        //            var ReferenceNumber = value.firstForm.ReferenceNumber;
-        //            var DateOfEntry = value.firstForm.DateOfEntry;
-        //            var Status = value.status;
-
-
-        //            //};
-        //           // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType=@IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status where  Id = @Id";
-        //            string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
-
-        //            var result = connection.Execute(updateQuery, new
-        //            {
-        //                IdtIctType,
-        //                ReferenceNumber,
-        //                DateOfEntry,
-        //                Status,
-        //                Id
-        //            });
-        //            var IdtIctMasterId = Id;
-        //           // var IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
-        //            for (int i = 0; i < value.depotProdcutValueList.Count; i++)
-        //            {
-                         
-        //                var currentRecord = connection.Query<int>("Select * from IdtIctDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
-        //                //  var isRecordExist
-        //                var productId = value.depotProdcutValueList[i].productId;
-        //                  var  depotId = value.depotProdcutValueList[i].depotId;
-        //                  var quantity = value.depotProdcutValueList[i].quantity;
-        //                  var  date = value.depotProdcutValueList[i].date;
-        //                var DetailsId = value.depotProdcutValueList[i].Id;
-        //                  //var IdtIctMasterId = IdtIctMasterId;
-
-                        
-        //                //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
-        //                string updateQueryforDetails = @"UPDATE IdtIctDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
-        //                var result2 = connection.Execute(updateQueryforDetails, new
-        //                {
-        //                    productId,
-        //                    depotId,
-        //                    quantity,
-        //                    date,
-        //                    DetailsId
-        //                });
-        //            }
-        //            scope.Complete();
-        //            return Json(new { Message = "Record Updated successfully!" });
-        //        }
+                var IdtIctExist = connection.Query<int>("Select * from IdtIcTMaster where ID = @Id", new { Id = Id }).FirstOrDefault();
+                if (IdtIctExist == null)
+                {
+                    throw new ProcessException("Selected Idt/Ict not exists");
+                }
+                else
+                {
+                    //var p = new firstForm
+                    //{
+                    var IdtIctType = value.firstForm.IdtIctType;
+                    var ReferenceNumber = value.firstForm.ReferenceNumber;
+                    var DateOfEntry = value.firstForm.DateOfEntry;
+                    var Status = value.status;
 
 
-        //    }
-        //}
+                    //};
+                    // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType=@IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status where  Id = @Id";
+                    string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+
+                    var result = connection.Execute(updateQuery, new
+                    {
+                        IdtIctType,
+                        ReferenceNumber,
+                        DateOfEntry,
+                        Status,
+                        Id
+                    });
+                    var IdtIctMasterId = Id;
+                    // var IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
+                    for (int i = 0; i < value.depotProdcutValueList.Count; i++)
+                    {
+
+                        var currentRecord = connection.Query<int>("Select * from IdtIctDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
+                        //  var isRecordExist
+                        var productId = value.depotProdcutValueList[i].productId;
+                        var depotId = value.depotProdcutValueList[i].depotId;
+                        var quantity = value.depotProdcutValueList[i].quantity;
+                        var date = value.depotProdcutValueList[i].date;
+                        var DetailsId = value.depotProdcutValueList[i].Id;
+                        //var IdtIctMasterId = IdtIctMasterId;
+
+
+                        //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
+                        string updateQueryforDetails = @"UPDATE IdtIctDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
+                        var result2 = connection.Execute(updateQueryforDetails, new
+                        {
+                            productId,
+                            depotId,
+                            quantity,
+                            date,
+                            DetailsId
+                        });
+                    }
+                    scope.Complete();
+                    return Json(new { Message = "Record Updated successfully!" });
+                }
+
+
+            }
+        }
         private string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
