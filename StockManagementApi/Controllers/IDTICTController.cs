@@ -97,9 +97,6 @@ namespace StockManagementApi.Controllers
             {
                 var datetime= Convert.ToDateTime(idtData.IdtIctDetails[i].date).Date; //only
                 string date =datetime.ToString("yyyy-MM-dd");
-               // DateTime dt = DateTime.ParseExact(date.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-                //var date = DateTime.ParseExact(idtData.IdtIctDetails[i].date, "yyyy-MM-dd ", null);
                 idtData.IdtIctDetails[i].date = date;
             }
             return idtData;
@@ -119,10 +116,11 @@ namespace StockManagementApi.Controllers
                         IdtIctType = value.firstForm.IdtIctType,
                         ReferenceNumber = value.firstForm.ReferenceNumber,
                         DateOfEntry = value.firstForm.DateOfEntry,
+                        Status = value.status,
 
 
                     };
-                    p.Id = connection.Query<int>(@"insert IdtIcTOutMaster(IdtIctType,ReferenceNumber,DateOfEntry) values (@IdtIctType,@ReferenceNumber,@DateOfEntry) select cast(scope_identity() as int)", p).First();
+                    p.Id = connection.Query<int>(@"insert IdtIcTOutMaster(IdtIctType,ReferenceNumber,DateOfEntry,Status) values (@IdtIctType,@ReferenceNumber,@DateOfEntry,@Status) select cast(scope_identity() as int)", p).First();
                     foreach (var item in value.depotProdcutValueList)
                     {
                         var data = new depotProductValueModel
@@ -177,6 +175,15 @@ namespace StockManagementApi.Controllers
             idtData.IdtIcTMaster = connection.Query<firstForm>("Select * from IdtIcTOutMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
             var IdtIctMasterId = Id;
             idtData.IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctOutDetails where IdtIctOutMasterId = @IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
+            var dateofEntry = Convert.ToDateTime(idtData.IdtIcTMaster.DateOfEntry).Date;
+            string entryDate = dateofEntry.ToString("yyyy-MM-dd");
+            idtData.IdtIcTMaster.DateOfEntry = Convert.ToDateTime(entryDate);
+            for (int i = 0; i < idtData.IdtIctDetails.Count; i++)
+            {
+                var datetime = Convert.ToDateTime(idtData.IdtIctDetails[i].date).Date; //only
+                string date = datetime.ToString("yyyy-MM-dd");
+                idtData.IdtIctDetails[i].date = date;
+            }
             return idtData;
         }
 
@@ -279,7 +286,8 @@ namespace StockManagementApi.Controllers
 
         public async Task<IHttpActionResult> EditIdtIctOut([FromBody] EditIdtIctInModel value)
         {
-            var Id = Convert.ToInt32(value.depotProdcutValueList[0].Id);
+
+            var Id = Convert.ToInt32(value.depotProdcutValueList[0].IdtIctMasterId);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -325,8 +333,10 @@ namespace StockManagementApi.Controllers
                         // var IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
                         for (int i = 0; i < value.depotProdcutValueList.Count; i++)
                         {
+                            if (value.depotProdcutValueList[i].Id != 0)
+                            {
 
-                            var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
+                                var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
                             //  var isRecordExist
                             var productId = value.depotProdcutValueList[i].productId;
                             var depotId = value.depotProdcutValueList[i].depotId;
@@ -346,6 +356,20 @@ namespace StockManagementApi.Controllers
                                 date,
                                 DetailsId
                             });
+                            }
+                            else
+                            {
+                                var data = new depotProductValueModel
+                                {
+                                    productId = value.depotProdcutValueList[i].productId,
+                                    depotId = value.depotProdcutValueList[i].depotId,
+                                    quantity = value.depotProdcutValueList[i].quantity,
+                                    date = value.depotProdcutValueList[i].date,
+                                    IdtIctMasterId = value.depotProdcutValueList[i].IdtIctMasterId
+
+                                };
+                                var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                            }
                         }
                        // scope.Complete();
                         return Json(new { Message = "Record Updated successfully!" });
