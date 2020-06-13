@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Http;
+using static StockManagementApi.Controllers.CategoryController;
 
 namespace StockManagementApi.Controllers
 {
@@ -32,8 +33,8 @@ namespace StockManagementApi.Controllers
                         ReferenceNumber = value.cpLTMaster.ReferenceNumber,
                         SupplierId = value.cpLTMaster.SupplierId,
                         TenderDate = value.cpLTMaster.TenderDate,
-                        Type=value.cpLTMaster.Type
-                        
+                        Type = value.cpLTMaster.Type
+
                     };
                     p.Id = connection.Query<int>(@"insert CPLTMaster(LD,ReferenceNumber,SupplierId,TenderDate,Type) values (@LD,@ReferenceNumber,@SupplierId,@TenderDate,@Type) select cast(scope_identity() as int)", p).First();
                     foreach (var item in value.cpLTDetails)
@@ -41,12 +42,12 @@ namespace StockManagementApi.Controllers
                         var data = new CPLTDetails
                         {
                             DeliveryDate = item.DeliveryDate,
-                           OemId  = item.OemId,
+                            OemId = item.OemId,
                             ProdId = item.ProdId,
                             Quantity = item.Quantity,
                             Rate = item.Rate,
-                            Value=item.Value,
-                            CPLTId=p.Id
+                            Value = item.Value,
+                            CPLTId = p.Id
 
                         };
                         data.Id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId) select cast(scope_identity() as int)", data).First();
@@ -58,15 +59,15 @@ namespace StockManagementApi.Controllers
                 {
                     // Not needed any rollback, if you don't call Complete
                     // a rollback is automatic exiting from the using block
-                     connection.BeginTransaction().Rollback();
+                    connection.BeginTransaction().Rollback();
                     return Json(new { Message = "Error" });
 
                 }
             }
-            
+
         }
         [HttpGet]
-        public  dynamic ViewCP()
+        public dynamic ViewCP()
         {
             CPLTMaster cpLtdata = new CPLTMaster();
             var connection = new SqlConnection(sqlConnectionString);
@@ -81,10 +82,109 @@ namespace StockManagementApi.Controllers
             var list = DataTableToJSONWithJSONNet(dt);
             dynamic json = JsonConvert.DeserializeObject(list);
 
-          //  cpLtdata = json;
+            //  cpLtdata = json;
             return json;
-           
+
         }
+
+        public dynamic GetByCP(int Id)
+        {
+            CpLt cpLT = new CpLt();
+            var connection = new SqlConnection(sqlConnectionString);
+            cpLT.cpLTMaster = connection.Query<CPLTMaster>("Select * from CPLTMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
+            var tenderDates = Convert.ToDateTime(cpLT.cpLTMaster.TenderDate).Date;
+            string tenderDate = tenderDates.ToString("yyyy-MM-dd");
+            cpLT.cpLTMaster.TenderDate = tenderDate;
+            var CPLTId = Id;
+            cpLT.cpLTDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId", new { CPLTId = CPLTId }).ToList();
+            for (int i = 0; i < cpLT.cpLTDetails.Count; i++)
+            {
+                var datetime = Convert.ToDateTime(cpLT.cpLTDetails[i].DeliveryDate).Date; //only
+                string date = datetime.ToString("yyyy-MM-dd");
+                cpLT.cpLTDetails[i].DeliveryDate = date;
+            }
+            return cpLT;
+        }
+        [HttpPost]
+        public async Task<IHttpActionResult> EditCP([FromBody]CpLt value)
+        {
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                try
+                {
+                    var Id = Convert.ToInt32(value.cpLTMaster.Id);
+                    connection.Open();
+
+                    var CpLTExist = connection.Query<int>("Select * from CPLTDetails where ID = @Id", new { Id = Id }).FirstOrDefault();
+                    if (CpLTExist == null)
+                    {
+                        throw new ProcessException("Selected CPLT not exists");
+                    }
+                    else
+                    {
+                        var Type = value.cpLTMaster.Type;
+                        var ReferenceNumber = value.cpLTMaster.ReferenceNumber;
+                        var SupplierId = value.cpLTMaster.SupplierId;
+                        var TenderDate = value.cpLTMaster.TenderDate;
+                        var LD = value.cpLTMaster.LD;
+
+
+                        //};
+                        // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType=@IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status where  Id = @Id";
+                        string updateQuery = @"UPDATE CPLTMaster SET Type = @Type,ReferenceNumber=@ReferenceNumber,SupplierId=@SupplierId,TenderDate=@TenderDate WHERE Id = @Id";
+
+                        var result = connection.Execute(updateQuery, new
+                        {
+                            Type,
+                            ReferenceNumber,
+                            SupplierId,
+                            TenderDate,
+                            LD,
+                            Id
+                        });
+                        for (int i = 0; i < value.cpLTDetails.Count; i++)
+                        {
+                            if (value.cpLTDetails[i].CPLTId != 0)
+                            {
+                                
+                                var currentRecord = connection.Query<int>("Select * from CPLTDetails where ID = @Id", new { Id = value.cpLTDetails[i].Id }).FirstOrDefault();
+                                //  var isRecordExist
+                                string deleteQuery = @"UPDATE CPLTDetails Set IsActive = @IsActive where Id = @Id";
+                                var resultfordelte = connection.Execute(updateQuery, new { IsActive = false, Id = value.cpLTDetails[i].Id });
+                            
+                            }
+                            else
+                            {
+                                var data = new CPLTDetails
+                                {
+                                    Id = value.cpLTDetails[i].Id,
+                                     CPLTId= value.cpLTDetails[i].CPLTId,
+                                    ProdId = value.cpLTDetails[i].ProdId,
+                                    OemId = value.cpLTDetails[i].OemId,
+                                    Quantity = value.cpLTDetails[i].Quantity,
+                                    Rate= value.cpLTDetails[i].Rate,
+                                    Value= value.cpLTDetails[i].Value,
+                                    DeliveryDate= value.cpLTDetails[i].DeliveryDate
+
+                                };
+                                var id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId) select cast(scope_identity() as int)", data).First();
+                            }
+                           
+                        }
+                        scope.Complete();
+                        return Json(new { Message = "Record Inserted Successfully" });
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+               // return Ok();
+            }
+        }
+
 
         private string DataTableToJSONWithJSONNet(DataTable table)
         {

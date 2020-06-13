@@ -47,6 +47,7 @@ namespace StockManagementApi.Models
         public string quantity { get; set; }
         public string date { get; set; }
         public int IdtIctMasterId { get; set; }
+
         public int Id { get; set; }
     }
     public class IdtDetails
