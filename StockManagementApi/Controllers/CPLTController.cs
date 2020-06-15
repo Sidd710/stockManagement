@@ -47,15 +47,15 @@ namespace StockManagementApi.Controllers
                             Quantity = item.Quantity,
                             Rate = item.Rate,
                             Value = item.Value,
-                            CPLTId = p.Id
-
+                            CPLTId = p.Id,
+                            Status = true
                         };
-                        data.Id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId) select cast(scope_identity() as int)", data).First();
+                        data.Id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId,Status) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId,@Status) select cast(scope_identity() as int)", data).First();
                     }
                     scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Not needed any rollback, if you don't call Complete
                     // a rollback is automatic exiting from the using block
@@ -96,7 +96,7 @@ namespace StockManagementApi.Controllers
             string tenderDate = tenderDates.ToString("yyyy-MM-dd");
             cpLT.cpLTMaster.TenderDate = tenderDate;
             var CPLTId = Id;
-            cpLT.cpLTDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId", new { CPLTId = CPLTId }).ToList();
+            cpLT.cpLTDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId and Status = @Status", new { CPLTId = CPLTId, Status = true }).ToList();
             for (int i = 0; i < cpLT.cpLTDetails.Count; i++)
             {
                 var datetime = Convert.ToDateTime(cpLT.cpLTDetails[i].DeliveryDate).Date; //only
@@ -116,7 +116,7 @@ namespace StockManagementApi.Controllers
                     var Id = Convert.ToInt32(value.cpLTMaster.Id);
                     connection.Open();
 
-                    var CpLTExist = connection.Query<int>("Select * from CPLTDetails where ID = @Id", new { Id = Id }).FirstOrDefault();
+                    var CpLTExist = connection.Query<int>("Select * from CPLTMaster where ID = @Id", new { Id = Id }).FirstOrDefault();
                     if (CpLTExist == null)
                     {
                         throw new ProcessException("Selected CPLT not exists");
@@ -132,7 +132,7 @@ namespace StockManagementApi.Controllers
 
                         //};
                         // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType=@IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status where  Id = @Id";
-                        string updateQuery = @"UPDATE CPLTMaster SET Type = @Type,ReferenceNumber=@ReferenceNumber,SupplierId=@SupplierId,TenderDate=@TenderDate WHERE Id = @Id";
+                        string updateQuery = @"UPDATE CPLTMaster SET Type = @Type,ReferenceNumber=@ReferenceNumber,SupplierId=@SupplierId,TenderDate=@TenderDate,LD=@LD WHERE Id = @Id";
 
                         var result = connection.Execute(updateQuery, new
                         {
@@ -143,45 +143,60 @@ namespace StockManagementApi.Controllers
                             LD,
                             Id
                         });
+                        var listOfIds = new List<int>();
                         for (int i = 0; i < value.cpLTDetails.Count; i++)
                         {
                             if (value.cpLTDetails[i].CPLTId != 0)
                             {
-                                
-                                var currentRecord = connection.Query<int>("Select * from CPLTDetails where ID = @Id", new { Id = value.cpLTDetails[i].Id }).FirstOrDefault();
-                                //  var isRecordExist
-                                string deleteQuery = @"UPDATE CPLTDetails Set IsActive = @IsActive where Id = @Id";
-                                var resultfordelte = connection.Execute(updateQuery, new { IsActive = false, Id = value.cpLTDetails[i].Id });
-                            
+                                listOfIds.Add(value.cpLTDetails[i].CPLTId);
+                                //var currentRecord = connection.Query<int>("Select * from CPLTDetails where ID = @Id and Status = @Status", new { Id = value.cpLTDetails[i].Id, Status = true }).FirstOrDefault();
+                                ////  var isRecordExist
+                                //string deleteQuery = @"UPDATE CPLTDetails Set Status = @IsActive where Id = @Id";
+                                //var resultfordelte = connection.Execute(deleteQuery, new { IsActive = false, Id = value.cpLTDetails[i].Id });
+
                             }
                             else
                             {
                                 var data = new CPLTDetails
                                 {
                                     Id = value.cpLTDetails[i].Id,
-                                     CPLTId= value.cpLTDetails[i].CPLTId,
+                                    CPLTId = value.cpLTDetails[i].CPLTId,
                                     ProdId = value.cpLTDetails[i].ProdId,
                                     OemId = value.cpLTDetails[i].OemId,
                                     Quantity = value.cpLTDetails[i].Quantity,
-                                    Rate= value.cpLTDetails[i].Rate,
-                                    Value= value.cpLTDetails[i].Value,
-                                    DeliveryDate= value.cpLTDetails[i].DeliveryDate
-
+                                    Rate = value.cpLTDetails[i].Rate,
+                                    Value = value.cpLTDetails[i].Value,
+                                    DeliveryDate = value.cpLTDetails[i].DeliveryDate,
+                                    Status = true
                                 };
-                                var id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId) select cast(scope_identity() as int)", data).First();
+                                var id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId,Status) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId,@Status) select cast(scope_identity() as int)", data).First();
                             }
-                           
+
+                        }
+                        var currentActiveRecords = connection.Query<int>("Select Id from CPLTDetails where Status = @Status", new { Status = true }).ToList();
+                        foreach (var item in currentActiveRecords)
+                        {
+                            var a = listOfIds.IndexOf(item);
+                            if (a == -1)
+                            {
+                                //var currentRecord = connection.Query<int>("Select * from CPLTDetails where ID = @Id", new { Id = item}).FirstOrDefault();
+
+                                string deleteQuery = @"UPDATE CPLTDetails Set Status = @IsActive where Id = @Id";
+                                var resultfordelte = connection.Execute(deleteQuery, new { IsActive = false, Id = item });
+
+                            }
                         }
                         scope.Complete();
                         return Json(new { Message = "Record Inserted Successfully" });
                     }
+
                 }
                 catch (Exception)
                 {
 
                     throw;
                 }
-               // return Ok();
+                // return Ok();
             }
         }
 

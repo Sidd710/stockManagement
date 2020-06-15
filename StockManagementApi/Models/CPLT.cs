@@ -15,6 +15,7 @@ namespace StockManagementApi.Models
         public int Rate { get; set; }
         public int Value { get; set; }
         public string DeliveryDate { get; set; }
+        public bool Status { get; set; }
     }
 
     public class CPLTMaster
@@ -28,7 +29,7 @@ namespace StockManagementApi.Models
     }
     public class CpLt
     {
-        public  CPLTMaster cpLTMaster { get;set;}
+        public CPLTMaster cpLTMaster { get; set; }
         public List<CPLTDetails> cpLTDetails { get; set; }
     }
 }
