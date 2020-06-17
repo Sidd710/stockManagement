@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using StockManagementApi.Models;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -29,11 +30,11 @@ namespace StockManagementApi.Controllers
                 {
                     var p = new firstForm
                     {
-                        IdtIctType   = value.firstForm.IdtIctType,
+                        IdtIctType = value.firstForm.IdtIctType,
                         ReferenceNumber = value.firstForm.ReferenceNumber,
                         DateOfEntry = value.firstForm.DateOfEntry,
-                        Status=value.status,
-                       
+                        Status = value.status,
+
 
                     };
                     p.Id = connection.Query<int>(@"insert IdtIcTMaster(IdtIctType,ReferenceNumber,DateOfEntry,Status) values (@IdtIctType,@ReferenceNumber,@DateOfEntry,@Status) select cast(scope_identity() as int)", p).First();
@@ -45,13 +46,13 @@ namespace StockManagementApi.Controllers
                             depotId = item.depotId,
                             quantity = item.quantity,
                             date = item.date,
-                             IdtIctMasterId=p.Id
+                            IdtIctMasterId = p.Id
 
                         };
                         var id = connection.Query<int>(@"insert IdtIctDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
                     }
                     scope.Complete();
-                        return Json(new { Message = "Record Inserted Successfully" });
+                    return Json(new { Message = "Record Inserted Successfully" });
                 }
                 catch (Exception e)
                 {
@@ -84,7 +85,7 @@ namespace StockManagementApi.Controllers
 
         }
         public dynamic GetByIdt(int Id)
-         {
+        {
             IdtDetails idtData = new IdtDetails();
             var connection = new SqlConnection(sqlConnectionString);
             idtData.IdtIcTMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
@@ -95,8 +96,8 @@ namespace StockManagementApi.Controllers
             idtData.IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId = @IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
             for (int i = 0; i < idtData.IdtIctDetails.Count; i++)
             {
-                var datetime= Convert.ToDateTime(idtData.IdtIctDetails[i].date).Date; //only
-                string date =datetime.ToString("yyyy-MM-dd");
+                var datetime = Convert.ToDateTime(idtData.IdtIctDetails[i].date).Date; //only
+                string date = datetime.ToString("yyyy-MM-dd");
                 idtData.IdtIctDetails[i].date = date;
             }
             return idtData;
@@ -275,7 +276,7 @@ namespace StockManagementApi.Controllers
                         return Json(new { Message = "Record Updated successfully!" });
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     connection.BeginTransaction().Rollback();
                     return Json(new { Message = "Error" });
@@ -292,7 +293,7 @@ namespace StockManagementApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-         //   using (TransactionScope scope = new TransactionScope())
+            //   using (TransactionScope scope = new TransactionScope())
             using (var connection = new SqlConnection(sqlConnectionString))
             {
                 try
@@ -337,25 +338,25 @@ namespace StockManagementApi.Controllers
                             {
 
                                 var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
-                            //  var isRecordExist
-                            var productId = value.depotProdcutValueList[i].productId;
-                            var depotId = value.depotProdcutValueList[i].depotId;
-                            var quantity = value.depotProdcutValueList[i].quantity;
-                            var date = value.depotProdcutValueList[i].date;
-                            var DetailsId = value.depotProdcutValueList[i].Id;
-                            //var IdtIctMasterId = IdtIctMasterId;
+                                //  var isRecordExist
+                                var productId = value.depotProdcutValueList[i].productId;
+                                var depotId = value.depotProdcutValueList[i].depotId;
+                                var quantity = value.depotProdcutValueList[i].quantity;
+                                var date = value.depotProdcutValueList[i].date;
+                                var DetailsId = value.depotProdcutValueList[i].Id;
+                                //var IdtIctMasterId = IdtIctMasterId;
 
 
-                            //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
-                            string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
-                            var result2 = connection.Execute(updateQueryforDetails, new
-                            {
-                                productId,
-                                depotId,
-                                quantity,
-                                date,
-                                DetailsId
-                            });
+                                //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
+                                string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
+                                var result2 = connection.Execute(updateQueryforDetails, new
+                                {
+                                    productId,
+                                    depotId,
+                                    quantity,
+                                    date,
+                                    DetailsId
+                                });
                             }
                             else
                             {
@@ -371,7 +372,7 @@ namespace StockManagementApi.Controllers
                                 var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
                             }
                         }
-                       // scope.Complete();
+                        // scope.Complete();
                         return Json(new { Message = "Record Updated successfully!" });
                     }
                 }
@@ -390,6 +391,22 @@ namespace StockManagementApi.Controllers
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+        [HttpGet]
+        public IdTData viewIdtReferenceNumber()
+        {
+          //  List<firstForm> IdtIctInList = new List<firstForm>();
+            IdTData data = new IdTData();
+
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                var refNumberList = connection.Query<firstForm>("Select * from IdtIcTMaster WHERE Status='Completed'").ToList();
+             //   var list = DataTableToJSONWithJSONNet(refNumberList);
+               // dynamic json = JsonConvert.DeserializeObject(list);
+                data.IdtIctList = refNumberList;
+                return data;
+
+            }
         }
     }
     

@@ -64,5 +64,9 @@ namespace StockManagementApi.Models
         public List<depotProductValueModel> depotProdcutValueList { get; set; }
         public string status { get; set; }
     }
+    public class IdTData
+    {
+        public List<firstForm> IdtIctList { get; set; }
+    }
 
 }
