@@ -46,10 +46,12 @@ namespace StockManagementApi.Controllers
                             depotId = item.depotId,
                             quantity = item.quantity,
                             date = item.date,
-                            IdtIctMasterId = p.Id
+                            IdtIctMasterId = p.Id,
+                            AvailableQuantity=item.quantity,
+                            AddedOn=DateTime.Now
 
                         };
-                        var id = connection.Query<int>(@"insert IdtIctDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                        var id = connection.Query<int>(@"insert IdtIctDetails(IdtIctMasterId,productId,depotId,quantity,date,AvailableQuantity,AddedOn) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date,@AvailableQuantity,@AddedOn) select cast(scope_identity() as int)", data).First();
                     }
                     scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
@@ -393,18 +395,35 @@ namespace StockManagementApi.Controllers
             return JSONString;
         }
         [HttpGet]
-        public IdTData viewIdtReferenceNumber()
+        public List<InData> viewIdtReferenceNumber()
         {
-          //  List<firstForm> IdtIctInList = new List<firstForm>();
-            IdTData data = new IdTData();
+            //  List<firstForm> IdtIctInList = new List<firstForm>();
+            List<InData> data = new List<InData>();
 
             using (var connection = new SqlConnection(sqlConnectionString))
             {
-                var refNumberList = connection.Query<firstForm>("Select * from IdtIcTMaster WHERE Status='Completed'").ToList();
-             //   var list = DataTableToJSONWithJSONNet(refNumberList);
-               // dynamic json = JsonConvert.DeserializeObject(list);
-                data.IdtIctList = refNumberList;
+                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIcTMaster WHERE Status='Completed'").ToList();
+                //   var list = DataTableToJSONWithJSONNet(refNumberList);
+                // dynamic json = JsonConvert.DeserializeObject(list);
+                for (int i = 0; i < IdtrefNumberList.Count; i++)
+                {
+                    InData refList = new InData();
+                    refList.Id = IdtrefNumberList[i].Id;
+                    refList.ReferenceNumber = IdtrefNumberList[i].ReferenceNumber;
+                    refList.Type = IdtrefNumberList[i].IdtIctType;
+                    data.Add(refList);
+                }
+                var cpLprefNumberList = connection.Query<CPLTMaster>("Select * from CPLTMaster WHERE Status='Completed'").ToList();
+                for (int i = 0; i < cpLprefNumberList.Count; i++)
+                {
+                    InData refList = new InData();
+                    refList.Id = cpLprefNumberList[i].Id;
+                    refList.ReferenceNumber = cpLprefNumberList[i].ReferenceNumber;
+                    refList.Type = cpLprefNumberList[i].Type;
+                    data.Add(refList);
+                }
                 return data;
+
 
             }
         }

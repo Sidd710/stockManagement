@@ -27,6 +27,7 @@ namespace StockManagementApi.Controllers
             {
                 try
                 {
+                    connection.Open();
                     var p = new CPLTMaster
                     {
                         LD = value.cpLTMaster.LD,
@@ -48,14 +49,17 @@ namespace StockManagementApi.Controllers
                             Rate = item.Rate,
                             Value = item.Value,
                             CPLTId = p.Id,
-                            Status = true
+                            Status = true,
+                            AvailableQuantity=item.Quantity,
+                            Addedon=DateTime.Now,
+                            
                         };
-                        data.Id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId,Status) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId,@Status) select cast(scope_identity() as int)", data).First();
+                        data.Id = connection.Query<int>(@"insert CPLTDetails(DeliveryDate,OemId,ProdId,Quantity,Rate,Value,CPLTId,Status,AvailableQuantity,Addedon) values (@DeliveryDate,@OemId,@ProdId,@Quantity,@Rate,@Value,@CPLTId,@Status,@AvailableQuantity,@Addedon) select cast(scope_identity() as int)", data).First();
                     }
                     scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Not needed any rollback, if you don't call Complete
                     // a rollback is automatic exiting from the using block

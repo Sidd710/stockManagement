@@ -72,7 +72,10 @@ namespace StockManagementApi.Models
         [JsonProperty("depotId")]
         public int? DepotId { get; set; }
 
+        public string ReferenceNumber { get; set; }
 
+        public int? IdtMasterId { get; set; }
+        public int? CptMasterId { get; set; }
 
     }
     public class Batch
@@ -97,6 +100,7 @@ namespace StockManagementApi.Models
         public DateTime ESL { get; set; }
         [JsonProperty("Avl")]
         public int AvailableQuantity { get; set; }
+        public DateTime AddedOn { get; set; }
 
 
 

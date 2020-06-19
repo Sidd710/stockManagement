@@ -16,6 +16,9 @@ namespace StockManagementApi.Models
         public int Value { get; set; }
         public string DeliveryDate { get; set; }
         public bool Status { get; set; }
+        public int AvailableQuantity { get; set; }
+        public DateTime Addedon { get; set; }
+        public DateTime ModifiedOn { get; set; }
     }
 
     public class CPLTMaster

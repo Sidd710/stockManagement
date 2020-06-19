@@ -47,7 +47,9 @@ namespace StockManagementApi.Models
         public string quantity { get; set; }
         public string date { get; set; }
         public int IdtIctMasterId { get; set; }
-
+        public string AvailableQuantity { get; set; }
+        public DateTime AddedOn { get; set; }
+        public DateTime ModifiedOn { get; set; }
         public int Id { get; set; }
     }
     public class IdtDetails
@@ -64,9 +66,11 @@ namespace StockManagementApi.Models
         public List<depotProductValueModel> depotProdcutValueList { get; set; }
         public string status { get; set; }
     }
-    public class IdTData
+    public class InData
     {
-        public List<firstForm> IdtIctList { get; set; }
+        public int Id { get; set; }
+        public string ReferenceNumber { get; set; }
+        public string Type { get; set; }
     }
 
 }

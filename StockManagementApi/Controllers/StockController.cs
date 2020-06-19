@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -28,11 +29,103 @@ namespace StockManagementApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                using (TransactionScope scope = new TransactionScope())
+
                 using (var connection = new SqlConnection(sqlConnectionString))
                 {
-
-
                     connection.Open();
+                    Nullable<int> IdtMasterId =0;
+                    Nullable<int> CptMasterId = 0;
+                    if (stockIn.stock.IsCP || stockIn.stock.IsLP || stockIn.stock.IsLT)
+                    {
+                       var CPMaster = connection.Query<CPLTMaster>("Select * from CPLTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber } ).FirstOrDefault();
+                        if (CPMaster == null)
+                        {
+                            return Json(new { Message = "Please select valid CP Reference Number" });
+                        }
+                        else
+                        {
+                            var CpDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId", new { CPLTId = CPMaster.Id}).ToList();
+                            // IsProduct Exist
+                            var isProduct = CpDetails.Find(t => t.ProdId == stockIn.stock.ProductId);
+                          //  var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
+                            if (isProduct == null )
+                            {
+                                return Json(new { Message = "Please select valid depot and product" });
+                            }
+                            else
+                            {
+                                // FindCurrentCptDetails
+                                var currentCPTDetails = CpDetails.Find(t => t.ProdId == stockIn.stock.ProductId );
+                                if (stockIn.stock.Quantity > Convert.ToInt32(currentCPTDetails.AvailableQuantity))
+                                {
+                                    return Json(new { Message = "Quantity Not available" });
+                                }
+
+                                var NewAvailableQuantity = Convert.ToInt32(currentCPTDetails.AvailableQuantity) - stockIn.stock.Quantity;
+                                var ModifiedOn = DateTime.Now;
+                                var Id = currentCPTDetails.Id;
+                                CptMasterId = CPMaster.Id;
+                                string updateQuery = @"UPDATE CPLTDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
+                                // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+
+                                var result = connection.Execute(updateQuery, new
+                                {
+                                    NewAvailableQuantity,
+                                    ModifiedOn,
+                                    Id
+                                });
+
+                            }
+
+
+                        }
+                    }
+                    else
+                    {
+                        var IdtMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber }).FirstOrDefault();
+                        if(IdtMaster == null)
+                        {
+                            return Json(new { Message = "Please select valid CP Reference Number" });
+                        }
+                        else
+                        {
+                            var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId",new { IdtIctMasterId= IdtMaster.Id }).ToList();
+                            // IsProduct Exist
+                            var isProduct = IdtDetails.Find(t => t.productId == stockIn.stock.ProductId);
+                            var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
+                            if(isProduct == null || isDepot == null)
+                            {
+                                return Json(new { Message = "Please select valid depot and product" });
+                            }
+                            else
+                            {
+                                // FindCurrentIdtDetails
+                                var currentIdtDetails = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId && t.productId == stockIn.stock.ProductId);
+                               if( stockIn.stock.Quantity > Convert.ToInt32(currentIdtDetails.AvailableQuantity))
+                                {
+                                    return Json(new { Message = "Quantity Not available" });
+                                }
+
+                                var NewAvailableQuantity = Convert.ToInt32(currentIdtDetails.AvailableQuantity) - stockIn.stock.Quantity;
+                                var ModifiedOn = DateTime.Now;
+                                var Id = currentIdtDetails.Id;
+                                IdtMasterId = IdtMaster.Id;
+                                 string updateQuery = @"UPDATE IdtIctDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
+                               // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+
+                                var result = connection.Execute(updateQuery, new
+                                {
+                                    NewAvailableQuantity,
+                                    ModifiedOn,
+                                    Id
+                                });
+
+                            }
+                            
+
+                        }
+                    }
                     var identity = (ClaimsIdentity)User.Identity;
                     var userId = identity.Claims.Where(c => c.Type == ClaimTypes.Sid)
                        .Select(c => c.Value).SingleOrDefault();
@@ -50,16 +143,21 @@ namespace StockManagementApi.Controllers
                             ESL = item.ESL,
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
-                            BatchNo = item.BatchNo
-
+                            BatchNo = item.BatchNo,
+                            AddedOn = DateTime.Now
+                            
 
 
                         };
                         quantity = quantity + item.Quantity;
-                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,AddedOn) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@AddedOn) select cast(scope_identity() as int)", batchDetails).First();
                         BatchIds.Add(batchDetails.BatchId);
                     }
-                   
+                    if (CptMasterId == 0)
+                    {
+
+                    }
+
                     var stockInDetails = new Stock
                     {
                         BatchIdFromMobile = String.Join(",", BatchIds),
@@ -87,17 +185,21 @@ namespace StockManagementApi.Controllers
                         IsLP = stockIn.stock.IsLP,
                         IsIDT = stockIn.stock.IsIDT,
                         IsICT = stockIn.stock.IsICT,
+                        IdtMasterId = IdtMasterId == 0 ? null : IdtMasterId,
+                        CptMasterId = CptMasterId == 0 ? null : CptMasterId
 
 
                     };
                     
-                    stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
-                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT
-) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
-                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId,@IsCP,@IsLP,@IsIDT,@IsICT) select cast(scope_identity() as int)", stockInDetails).First();
-
                     
+                    stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
+                                         PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT,IdtMasterId,CptMasterId
+) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
+                                         @PackingMaterial,@OriginalManf,@GenericName,@Weight,@AddedOn,@SupplierId,@ProductId,@Quantity,@IsFromMobile,@ATNo,@OtherSupplier,@TransferedBy,@SampleSent,@SupplierNo,@DepotId,@IsCP,@IsLP,@IsIDT,@IsICT,@IdtMasterId,@CptMasterId) select cast(scope_identity() as int)", stockInDetails).First();
 
+                    //Update IdtMaster
+
+                    scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
 
 
