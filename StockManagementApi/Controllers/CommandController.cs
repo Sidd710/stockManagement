@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using static StockManagementApi.Controllers.CategoryController;
 
@@ -100,5 +101,58 @@ namespace StockManagementApi.Controllers
 
             }
         }
+
+        public dynamic GetByCommandId(int Id)
+        {
+            var command = new CommandList();
+            var connection = new SqlConnection(sqlConnectionString);
+            command = connection.Query<CommandList>("Select * from CommandMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
+            //var tenderDates = Convert.ToDateTime(cpLT.cpLTMaster.TenderDate).Date;
+            //string tenderDate = tenderDates.ToString("yyyy-MM-dd");
+            //cpLT.cpLTMaster.TenderDate = tenderDate;
+            //var CPLTId = Id;
+            //cpLT.cpLTDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId and Status = @Status", new { CPLTId = CPLTId, Status = true }).ToList();
+            //for (int i = 0; i < cpLT.cpLTDetails.Count; i++)
+            //{
+            //    var datetime = Convert.ToDateTime(cpLT.cpLTDetails[i].DeliveryDate).Date; //only
+            //    string date = datetime.ToString("yyyy-MM-dd");
+            //    cpLT.cpLTDetails[i].DeliveryDate = date;
+            //}
+            return command;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateCommand([FromBody]CommandList value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var Name = value.Name;
+                var Descripition = value.Descripition;
+                var UndatedOn = DateTime.Now;               
+                var Id = value.Id;
+                                
+                string updateQuery = @"UPDATE CommandMaster SET Name = @Name,Descripition=@Descripition,UndatedOn=@UndatedOn WHERE Id = @Id";
+
+                var result = connection.Execute(updateQuery, new
+                {
+                    Name,
+                    Descripition,
+                    UndatedOn,                    
+                    Id
+                });
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
+        }
+
     }
 }
