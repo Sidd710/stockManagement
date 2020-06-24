@@ -36,27 +36,73 @@ namespace StockManagementApi.Controllers
                     connection.Open();
                     Nullable<int> IdtMasterId =0;
                     Nullable<int> CptMasterId = 0;
-                    if (stockIn.stock.IsCP || stockIn.stock.IsLP || stockIn.stock.IsLT)
+                    if (stockIn.stock.IsIDT || stockIn.stock.IsICT)
                     {
-                       var CPMaster = connection.Query<CPLTMaster>("Select * from CPLTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber } ).FirstOrDefault();
+                        var IdtMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber }).FirstOrDefault();
+                        if (IdtMaster == null)
+                        {
+                            return Json(new { Message = "Please select valid CP Reference Number" });
+                        }
+                        else
+                        {
+                            var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtMaster.Id }).ToList();
+                            // IsProduct Exist
+                            var isProduct = IdtDetails.Find(t => t.productId == stockIn.stock.ProductId);
+                            var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
+                            if (isProduct == null || isDepot == null)
+                            {
+                                return Json(new { Message = "Please select valid depot and product" });
+                            }
+                            else
+                            {
+                                // FindCurrentIdtDetails
+                                var currentIdtDetails = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId && t.productId == stockIn.stock.ProductId);
+                                if (stockIn.stock.Quantity > Convert.ToInt32(currentIdtDetails.AvailableQuantity))
+                                {
+                                    return Json(new { Message = "Quantity Not available" });
+                                }
+
+                                var NewAvailableQuantity = Convert.ToInt32(currentIdtDetails.AvailableQuantity) - stockIn.stock.Quantity;
+                                var ModifiedOn = DateTime.Now;
+                                var Id = currentIdtDetails.Id;
+                                IdtMasterId = IdtMaster.Id;
+                                string updateQuery = @"UPDATE IdtIctDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
+                                // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+
+                                var result = connection.Execute(updateQuery, new
+                                {
+                                    NewAvailableQuantity,
+                                    ModifiedOn,
+                                    Id
+                                });
+
+                            }
+
+
+                        }
+                        
+                    }
+                    else
+                    {
+                        var CPMaster = connection.Query<CPLTMaster>("Select * from CPLTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber }).FirstOrDefault();
                         if (CPMaster == null)
                         {
                             return Json(new { Message = "Please select valid CP Reference Number" });
                         }
                         else
                         {
-                            var CpDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId", new { CPLTId = CPMaster.Id}).ToList();
+                            var CpDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId", new { CPLTId = CPMaster.Id }).ToList();
                             // IsProduct Exist
                             var isProduct = CpDetails.Find(t => t.ProdId == stockIn.stock.ProductId);
-                          //  var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
-                            if (isProduct == null )
+                            //  var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
+                            if (isProduct == null)
                             {
                                 return Json(new { Message = "Please select valid depot and product" });
                             }
                             else
                             {
                                 // FindCurrentCptDetails
-                                var currentCPTDetails = CpDetails.Find(t => t.ProdId == stockIn.stock.ProductId );
+                                var currentCPTDetails = CpDetails.Find(t => t.ProdId == stockIn.stock.ProductId);
                                 if (stockIn.stock.Quantity > Convert.ToInt32(currentCPTDetails.AvailableQuantity))
                                 {
                                     return Json(new { Message = "Quantity Not available" });
@@ -78,51 +124,6 @@ namespace StockManagementApi.Controllers
 
                             }
 
-
-                        }
-                    }
-                    else
-                    {
-                        var IdtMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber }).FirstOrDefault();
-                        if(IdtMaster == null)
-                        {
-                            return Json(new { Message = "Please select valid CP Reference Number" });
-                        }
-                        else
-                        {
-                            var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId",new { IdtIctMasterId= IdtMaster.Id }).ToList();
-                            // IsProduct Exist
-                            var isProduct = IdtDetails.Find(t => t.productId == stockIn.stock.ProductId);
-                            var isDepot = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId);
-                            if(isProduct == null || isDepot == null)
-                            {
-                                return Json(new { Message = "Please select valid depot and product" });
-                            }
-                            else
-                            {
-                                // FindCurrentIdtDetails
-                                var currentIdtDetails = IdtDetails.Find(t => t.depotId == stockIn.stock.DepotId && t.productId == stockIn.stock.ProductId);
-                               if( stockIn.stock.Quantity > Convert.ToInt32(currentIdtDetails.AvailableQuantity))
-                                {
-                                    return Json(new { Message = "Quantity Not available" });
-                                }
-
-                                var NewAvailableQuantity = Convert.ToInt32(currentIdtDetails.AvailableQuantity) - stockIn.stock.Quantity;
-                                var ModifiedOn = DateTime.Now;
-                                var Id = currentIdtDetails.Id;
-                                IdtMasterId = IdtMaster.Id;
-                                 string updateQuery = @"UPDATE IdtIctDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
-                               // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
-
-                                var result = connection.Execute(updateQuery, new
-                                {
-                                    NewAvailableQuantity,
-                                    ModifiedOn,
-                                    Id
-                                });
-
-                            }
-                            
 
                         }
                     }
