@@ -106,18 +106,7 @@ namespace StockManagementApi.Controllers
         {
             var command = new CommandList();
             var connection = new SqlConnection(sqlConnectionString);
-            command = connection.Query<CommandList>("Select * from CommandMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
-            //var tenderDates = Convert.ToDateTime(cpLT.cpLTMaster.TenderDate).Date;
-            //string tenderDate = tenderDates.ToString("yyyy-MM-dd");
-            //cpLT.cpLTMaster.TenderDate = tenderDate;
-            //var CPLTId = Id;
-            //cpLT.cpLTDetails = connection.Query<CPLTDetails>("Select * from CPLTDetails where CPLTId = @CPLTId and Status = @Status", new { CPLTId = CPLTId, Status = true }).ToList();
-            //for (int i = 0; i < cpLT.cpLTDetails.Count; i++)
-            //{
-            //    var datetime = Convert.ToDateTime(cpLT.cpLTDetails[i].DeliveryDate).Date; //only
-            //    string date = datetime.ToString("yyyy-MM-dd");
-            //    cpLT.cpLTDetails[i].DeliveryDate = date;
-            //}
+            command = connection.Query<CommandList>("Select * from CommandMaster where Id = @Id", new { Id = Id }).FirstOrDefault();           
             return command;
         }
 

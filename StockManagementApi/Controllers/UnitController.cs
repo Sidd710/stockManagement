@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using static StockManagementApi.Controllers.CategoryController;
 
@@ -136,6 +137,54 @@ namespace StockManagementApi.Controllers
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+
+        public dynamic GetByUnitId(int Id)
+        {
+            var unit = new UnitList();
+            var connection = new SqlConnection(sqlConnectionString);
+            unit = connection.Query<UnitList>("Select * from UnitMaster where Unit_Id = @Id", new { Id = Id }).FirstOrDefault();
+            return unit;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateUnit([FromBody]UnitList value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+
+                var Unit_Name = value.Unit_Name;
+                var Depu_Id = value.Depu_Id;
+                var Unit_Desc = value.Unit_Desc;                
+                var ModifiedOn = DateTime.Now;
+                var UnitType = value.UnitType;
+                var UnitTypeOther = value.UnitTypeOther;
+                var Unit_Id = value.Unit_Id;
+
+
+                string updateQuery = @"UPDATE UnitMaster SET Unit_Name = @Unit_Name,Depu_Id=@Depu_Id,Unit_Desc=@Unit_Desc,ModifiedOn=@ModifiedOn,UnitType=@UnitType,UnitTypeOther=@UnitTypeOther WHERE Unit_Id = @Unit_Id";
+
+                var result = connection.Execute(updateQuery, new
+                {
+                    Unit_Name,
+                    Depu_Id,
+                    Unit_Desc,
+                    ModifiedOn,
+                    UnitType,
+                    UnitTypeOther
+                });
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
         }
 
     }

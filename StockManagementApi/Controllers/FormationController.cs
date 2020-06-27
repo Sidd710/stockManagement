@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using static StockManagementApi.Controllers.CategoryController;
 
@@ -125,6 +126,50 @@ namespace StockManagementApi.Controllers
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
         }
-        
+
+        public dynamic GetByFormationId(int Id)
+        {
+            var formation = new FormationList();
+            var connection = new SqlConnection(sqlConnectionString);
+            formation = connection.Query<FormationList>("Select * from Formation where Id = @Id", new { Id = Id }).FirstOrDefault();
+            return formation;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateFormation([FromBody]FormationList value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var Name = value.Name;
+                var Descripition = value.Descripition;
+                var UndatedOn = DateTime.Now;
+                var CommandId = value.CommandId;
+                var Id = value.Id;
+                
+
+                string updateQuery = @"UPDATE Formation SET Name = @Name,Descripition=@Descripition,UndatedOn=@UndatedOn,CommandId=@CommandId WHERE Id = @Id";
+
+                var result = connection.Execute(updateQuery, new
+                {
+                    Name,
+                    Descripition,
+                    UndatedOn,
+                    CommandId,
+                    Id
+                });
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
+        }
+
     }
 }
