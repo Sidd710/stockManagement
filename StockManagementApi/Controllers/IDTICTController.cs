@@ -47,8 +47,8 @@ namespace StockManagementApi.Controllers
                             quantity = item.quantity,
                             date = item.date,
                             IdtIctMasterId = p.Id,
-                            AvailableQuantity=item.quantity,
-                            AddedOn=DateTime.Now
+                            AvailableQuantity = item.quantity,
+                            AddedOn = DateTime.Now
 
                         };
                         var id = connection.Query<int>(@"insert IdtIctDetails(IdtIctMasterId,productId,depotId,quantity,date,AvailableQuantity,AddedOn) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date,@AvailableQuantity,@AddedOn) select cast(scope_identity() as int)", data).First();
@@ -56,7 +56,7 @@ namespace StockManagementApi.Controllers
                     scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Not needed any rollback, if you don't call Complete
                     // a rollback is automatic exiting from the using block
@@ -107,7 +107,7 @@ namespace StockManagementApi.Controllers
 
 
         [HttpPost]
-        public async Task<IHttpActionResult> AddIdtIctOut([FromBody]IdtIctInModel value)
+        public async Task<IHttpActionResult> AddIdtIctOut([FromBody]IdtIctOutModel value)
         {
             using (TransactionScope scope = new TransactionScope())
             using (var connection = new SqlConnection(sqlConnectionString))
@@ -124,23 +124,43 @@ namespace StockManagementApi.Controllers
 
                     };
                     p.Id = connection.Query<int>(@"insert IdtIcTOutMaster(IdtIctType,ReferenceNumber,DateOfEntry,Status) values (@IdtIctType,@ReferenceNumber,@DateOfEntry,@Status) select cast(scope_identity() as int)", p).First();
-                    foreach (var item in value.depotProdcutValueList)
+                    if (value.firstForm.IdtIctType == "LUT")
                     {
-                        var data = new depotProductValueModel
+                        foreach (var item in value.unitProductValueList)
                         {
-                            productId = item.productId,
-                            depotId = item.depotId,
-                            quantity = item.quantity,
-                            date = item.date,
-                            IdtIctMasterId = p.Id
-
-                        };
-                        var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                            var data = new unitProductValueModel
+                            {
+                                productId = item.productId,
+                                unitId = item.unitId,
+                                quantity = item.quantity,
+                                date = item.date,
+                                IdtIctMasterId = p.Id,
+                                depotId = 0
+                            };
+                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,unitId,quantity,date,depotId) values (@IdtIctMasterId,@productId,@unitId,@quantity,@date,@depotId) select cast(scope_identity() as int)", data).First();
+                        }
                     }
+                    else
+                    {
+                        foreach (var item in value.depotProdcutValueList)
+                        {
+                            var data = new depotProductValueModel
+                            {
+                                productId = item.productId,
+                                depotId = item.depotId,
+                                quantity = item.quantity,
+                                date = item.date,
+                                IdtIctMasterId = p.Id
+
+                            };
+                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                        }
+                    }
+
                     scope.Complete();
                     return Json(new { Message = "Record Inserted Successfully" });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Not needed any rollback, if you don't call Complete
                     // a rollback is automatic exiting from the using block
@@ -278,7 +298,7 @@ namespace StockManagementApi.Controllers
                         return Json(new { Message = "Record Updated successfully!" });
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     connection.BeginTransaction().Rollback();
                     return Json(new { Message = "Error" });
@@ -428,5 +448,5 @@ namespace StockManagementApi.Controllers
             }
         }
     }
-    
+
 }

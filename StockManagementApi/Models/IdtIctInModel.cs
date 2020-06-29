@@ -14,6 +14,16 @@ namespace StockManagementApi.Models
         public string status { get; set; }
     }
 
+    public class IdtIctOutModel
+    {
+        public firstForm firstForm { get; set; }
+        public List<depotValueModel> depotValue { get; set; }
+        public List<depotProductValueModel> depotProdcutValueList { get; set; }
+        public List<depotValueModel> unitValue { get; set; }
+        public List<unitProductValueModel> unitProductValueList { get; set; }
+        public string status { get; set; }
+    }
+
     public class firstForm
     {
         public int Id { get; set; }
@@ -27,6 +37,15 @@ namespace StockManagementApi.Models
         public List<depotValueModel> depotValueList { get; set; }
     }
     public class depotValueModel
+    {
+        public int id { get; set; }
+        public string value { get; set; }
+        public bool Checked { get; set; }
+        public string date { get; set; }
+
+    }
+
+    public class unitValueModel
     {
         public int id { get; set; }
         public string value { get; set; }
@@ -51,6 +70,22 @@ namespace StockManagementApi.Models
         public DateTime AddedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int Id { get; set; }
+    }
+
+    public class unitProductValueModel
+    {
+        [JsonProperty("pid")]
+        public int productId { get; set; }
+        [JsonProperty("uid")]
+        public int unitId { get; set; }
+        public string quantity { get; set; }
+        public string date { get; set; }
+        public int IdtIctMasterId { get; set; }
+        public string AvailableQuantity { get; set; }
+        public DateTime AddedOn { get; set; }
+        public DateTime ModifiedOn { get; set; }
+        public int Id { get; set; }
+        public int depotId { get; set; }
     }
     public class IdtDetails
     {
