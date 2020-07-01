@@ -85,6 +85,7 @@ namespace StockManagementApi.Models
         public DateTime AddedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int Id { get; set; }
+        [JsonProperty("did")]
         public int depotId { get; set; }
     }
     public class IdtDetails
@@ -99,6 +100,17 @@ namespace StockManagementApi.Models
         public firstForm firstForm { get; set; }
         public List<depotValueModel> depotValue { get; set; }
         public List<depotProductValueModel> depotProdcutValueList { get; set; }
+        public string status { get; set; }
+    }
+
+    public class EditIdtIctOutModel
+    {
+        public int Id { get; set; }
+        public firstForm firstForm { get; set; }
+        public List<depotValueModel> depotValue { get; set; }
+        public List<depotProductValueModel> depotProdcutValueList { get; set; }
+        public List<depotValueModel> unitValue { get; set; }
+        public List<unitProductValueModel> unitProductValueList { get; set; }
         public string status { get; set; }
     }
     public class InData

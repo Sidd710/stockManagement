@@ -197,7 +197,7 @@ namespace StockManagementApi.Controllers
             var connection = new SqlConnection(sqlConnectionString);
             idtData.IdtIcTMaster = connection.Query<firstForm>("Select * from IdtIcTOutMaster where Id = @Id", new { Id = Id }).FirstOrDefault();
             var IdtIctMasterId = Id;
-            idtData.IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctOutDetails where IdtIctOutMasterId = @IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
+            idtData.IdtIctDetails = connection.Query<unitProductValueModel>("Select * from IdtIctOutDetails where IdtIctOutMasterId = @IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
             var dateofEntry = Convert.ToDateTime(idtData.IdtIcTMaster.DateOfEntry).Date;
             string entryDate = dateofEntry.ToString("yyyy-MM-dd");
             idtData.IdtIcTMaster.DateOfEntry = Convert.ToDateTime(entryDate);
@@ -307,10 +307,17 @@ namespace StockManagementApi.Controllers
             }
         }
 
-        public async Task<IHttpActionResult> EditIdtIctOut([FromBody] EditIdtIctInModel value)
+        public async Task<IHttpActionResult> EditIdtIctOut([FromBody] EditIdtIctOutModel value)
         {
-
-            var Id = Convert.ToInt32(value.depotProdcutValueList[0].IdtIctMasterId);
+            var Id = 0;
+            if (value.depotProdcutValueList.Count > 0)
+            {
+                Id = Convert.ToInt32(value.depotProdcutValueList[0].IdtIctMasterId);
+            }
+            else
+            {
+                Id = Convert.ToInt32(value.unitProductValueList[0].IdtIctMasterId);
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -320,9 +327,6 @@ namespace StockManagementApi.Controllers
             {
                 try
                 {
-
-
-
                     connection.Open();
 
                     var IdtIctExist = connection.Query<int>("Select * from IdtIcTOutMaster where ID = @Id", new { Id = Id }).FirstOrDefault();
@@ -354,44 +358,90 @@ namespace StockManagementApi.Controllers
                         });
                         var IdtIctMasterId = Id;
                         // var IdtIctDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtIctMasterId }).ToList();
-                        for (int i = 0; i < value.depotProdcutValueList.Count; i++)
+                        if (value.firstForm.IdtIctType == "LUT")
                         {
-                            if (value.depotProdcutValueList[i].Id != 0)
+                            for (int i = 0; i < value.unitProductValueList.Count; i++)
                             {
-
-                                var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
-                                //  var isRecordExist
-                                var productId = value.depotProdcutValueList[i].productId;
-                                var depotId = value.depotProdcutValueList[i].depotId;
-                                var quantity = value.depotProdcutValueList[i].quantity;
-                                var date = value.depotProdcutValueList[i].date;
-                                var DetailsId = value.depotProdcutValueList[i].Id;
-                                //var IdtIctMasterId = IdtIctMasterId;
-
-
-                                //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
-                                string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
-                                var result2 = connection.Execute(updateQueryforDetails, new
+                                if (value.unitProductValueList[i].Id != 0)
                                 {
-                                    productId,
-                                    depotId,
-                                    quantity,
-                                    date,
-                                    DetailsId
-                                });
-                            }
-                            else
+
+                                    var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.unitProductValueList[i].Id }).FirstOrDefault();
+                                    //  var isRecordExist
+                                    var productId = value.unitProductValueList[i].productId;
+                                    var unitId = value.unitProductValueList[i].unitId;
+                                    var quantity = value.unitProductValueList[i].quantity;
+                                    var date = value.unitProductValueList[i].date;
+                                    var DetailsId = value.unitProductValueList[i].Id;
+                                    //var IdtIctMasterId = IdtIctMasterId;
+
+
+                                    //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
+                                    string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,unitId=@unitId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
+                                    var result2 = connection.Execute(updateQueryforDetails, new
+                                    {
+                                        productId,
+                                        unitId,
+                                        quantity,
+                                        date,
+                                        DetailsId
+                                    });
+                                }
+                                else
+                                {
+                                    var data = new unitProductValueModel
+                                    {
+                                        productId = value.unitProductValueList[i].productId,
+                                        unitId = value.unitProductValueList[i].unitId,
+                                        quantity = value.unitProductValueList[i].quantity,
+                                        date = value.unitProductValueList[i].date,
+                                        IdtIctMasterId = value.unitProductValueList[i].IdtIctMasterId,
+                                        depotId = 0
+                                    };
+                                    var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,unitId,quantity,date,depotId) values (@IdtIctMasterId,@productId,@unitId,@quantity,@date,@depotId) select cast(scope_identity() as int)", data).First();
+                                }
+                            }                          
+                        }
+                        else
+                        {
+                            for (int i = 0; i < value.depotProdcutValueList.Count; i++)
                             {
-                                var data = new depotProductValueModel
+                                if (value.depotProdcutValueList[i].Id != 0)
                                 {
-                                    productId = value.depotProdcutValueList[i].productId,
-                                    depotId = value.depotProdcutValueList[i].depotId,
-                                    quantity = value.depotProdcutValueList[i].quantity,
-                                    date = value.depotProdcutValueList[i].date,
-                                    IdtIctMasterId = value.depotProdcutValueList[i].IdtIctMasterId
 
-                                };
-                                var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                                    var currentRecord = connection.Query<int>("Select * from IdtIctOutDetails where ID = @Id", new { Id = value.depotProdcutValueList[i].Id }).FirstOrDefault();
+                                    //  var isRecordExist
+                                    var productId = value.depotProdcutValueList[i].productId;
+                                    var depotId = value.depotProdcutValueList[i].depotId;
+                                    var quantity = value.depotProdcutValueList[i].quantity;
+                                    var date = value.depotProdcutValueList[i].date;
+                                    var DetailsId = value.depotProdcutValueList[i].Id;
+                                    //var IdtIctMasterId = IdtIctMasterId;
+
+
+                                    //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
+                                    string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
+                                    var result2 = connection.Execute(updateQueryforDetails, new
+                                    {
+                                        productId,
+                                        depotId,
+                                        quantity,
+                                        date,
+                                        DetailsId
+                                    });
+                                }
+                                else
+                                {
+                                    var data = new depotProductValueModel
+                                    {
+                                        productId = value.depotProdcutValueList[i].productId,
+                                        depotId = value.depotProdcutValueList[i].depotId,
+                                        quantity = value.depotProdcutValueList[i].quantity,
+                                        date = value.depotProdcutValueList[i].date,
+                                        IdtIctMasterId = value.depotProdcutValueList[i].IdtIctMasterId
+
+                                    };
+                                    var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                                }
                             }
                         }
                         // scope.Complete();
