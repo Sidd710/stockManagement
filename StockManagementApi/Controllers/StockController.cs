@@ -41,7 +41,7 @@ namespace StockManagementApi.Controllers
                         var IdtMaster = connection.Query<firstForm>("Select * from IdtIcTMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockIn.stock.ReferenceNumber }).FirstOrDefault();
                         if (IdtMaster == null)
                         {
-                            return Json(new { Message = "Please select valid CP Reference Number" });
+                            return Json(new { Message = "Please select valid Idt Reference Number" });
                         }
                         else
                         {
@@ -224,64 +224,141 @@ namespace StockManagementApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            using (TransactionScope scope = new TransactionScope())
 
             using (var connection = new SqlConnection(sqlConnectionString))
             {
                 try
                 {
                     connection.Open();
-                    foreach (var item in stockOut.stockOutBatchList)
+                    Nullable<int> IdtMasterId = 0;
+                    var IdtMaster = connection.Query<firstForm>("Select * from IdtIctOutMaster where ReferenceNumber = @ReferenceNumber", new { ReferenceNumber = stockOut.stockOut.ReferenceNumber }).FirstOrDefault();
+                    if (IdtMaster == null)
                     {
-                        var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
-                        if (lotExist == null)
-                        {
-                            return Json(new { Message = "Please Select Valid Lot/Batch" });
-                        }
-                        else if (lotExist.AvailableQuantity < item.Quantity)
-                        {
-                            return Json(new { Message = "Quantity Not Available FOr Batch Id :- " + item.BID });
-
-                        }
-
+                        return Json(new { Message = "Please select valid Idt Reference Number" });
                     }
-                    foreach (var item in stockOut.stockOutBatchList)
+                    else
                     {
-                        //var p = new StockOut { Remarks=st DateOfDispatch = stockOut.stockOut.DateOfDispatch, Quantity = stockOut.stockOut.Quantity };
-                        //p.s = connection.Query<int>(@"insert Stock_StockOut(LotBatchId,DateOfDispatch,Quantity) values (@LotBatchId,@DateOfDispatch,@Quantity) select cast(scope_identity() as int)", p).First();
-                        var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
-                        int availableQuantity = lotExist.AvailableQuantity - item.Quantity;
-                        string updateQuery = @"UPDATE BatchMaster SET AvailableQuantity = @availableQuantity WHERE BID = @BID";
-                        var p = new StockOut
+                        var IdtDetails = connection.Query<unitProductValueModel>("Select * from IdtIctOutDetails where IdtIctOutMasterId=@IdtIctOutMasterId", new { IdtIctOutMasterId = IdtMaster.Id }).ToList();
+                        // IsProduct Exist
+                        var isProduct = IdtDetails.Find(t => t.productId == stockOut.stockOut.ProductId);
+                        if (stockOut.stockOut.IsIDT)
                         {
-                            Remarks = stockOut.stockOut.Remarks,
-                            DateOfDispatch = stockOut.stockOut.DateOfDispatch,
-                            BatchId = item.BID,
-                            Quantity = item.Quantity,
-                            ProductId = stockOut.stockOut.ProductId,
-                            VoucherNumber = stockOut.stockOut.VoucherNumber,
-                            StockType = stockOut.stockOut.StockType,
-                            IsAWS=stockOut.stockOut.IsAWS,
-                            IsICT = stockOut.stockOut.IsICT,
-                            IsIDT = stockOut.stockOut.IsIDT,
-                            DepotId = stockOut.stockOut.DepotId,
-                            UnitId = stockOut.stockOut.UnitId,
-                        };
-                        var result = connection.Execute(updateQuery, new
+                            if (IdtMaster.IdtIctType != "IDT")
+                            {
+                                return Json(new { Message = "Please select valid Idt type" });
+                            }
+                        }
+                        else if (stockOut.stockOut.IsICT)
                         {
-                            availableQuantity,
-                            item.BID,
+                            if (IdtMaster.IdtIctType != "ICT")
+                            {
+                                return Json(new { Message = "Please select valid Idt type" });
+                            }
+                        }
+                        if (stockOut.stockOut.StockType != "LUT")
+                        {
+                            
+                            var isDepot = IdtDetails.Find(t => t.depotId == stockOut.stockOut.DepotId);
+                            if (isProduct == null || isDepot == null)
+                            {
+                                return Json(new { Message = "Please select valid depot and product" });
+                            }
+                        }
+                        else
+                        {
+                            var isUnit = IdtDetails.Find(t => t.unitId == stockOut.stockOut.UnitId);
+                            if (isProduct == null || isUnit == null)
+                            {
+                                return Json(new { Message = "Please select valid unit and product" });
+                            }
+                        }
 
+
+                        // FindCurrentIdtDetails
+                        var depotId = stockOut.stockOut.DepotId==null?0:stockOut.stockOut.DepotId;
+                        var productId = stockOut.stockOut.ProductId;
+                        var unitId = stockOut.stockOut.UnitId;
+                        var currentIdtDetails = IdtDetails.Find(t => t.depotId == depotId && t.productId == productId && t.unitId == unitId);
+                        if (stockOut.stockOut.Quantity > Convert.ToInt32(currentIdtDetails.AvailableQuantity))
+                        {
+                            return Json(new { Message = "Quantity Not available" });
+                        }
+
+                        var NewAvailableQuantity = Convert.ToInt32(currentIdtDetails.AvailableQuantity) - stockOut.stockOut.Quantity;
+                        var ModifiedOn = DateTime.Now;
+                        var Id = currentIdtDetails.Id;
+                        IdtMasterId = IdtMaster.Id;
+                        string update = @"UPDATE IdtIctOutDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
+                        // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+
+                        var results = connection.Execute(update, new
+                        {
+                            NewAvailableQuantity,
+                            ModifiedOn,
+                            Id
                         });
-                        p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType,IsAWS,IsICT,IsIDT,DepotId,UnitId) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType,@IsAWS,@IsICT,@IsIDT,@DepotId,@UnitId) select cast(scope_identity() as int)", p).First();
+
+
+
+                        foreach (var item in stockOut.stockOutBatchList)
+                        {
+                            var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
+                            if (lotExist == null)
+                            {
+                                return Json(new { Message = "Please Select Valid Lot/Batch" });
+                            }
+                            else if (lotExist.AvailableQuantity < item.Quantity)
+                            {
+                                return Json(new { Message = "Quantity Not Available FOr Batch Id :- " + item.BID });
+
+                            }
+
+                        }
+                        foreach (var item in stockOut.stockOutBatchList)
+                        {
+                            //var p = new StockOut { Remarks=st DateOfDispatch = stockOut.stockOut.DateOfDispatch, Quantity = stockOut.stockOut.Quantity };
+                            //p.s = connection.Query<int>(@"insert Stock_StockOut(LotBatchId,DateOfDispatch,Quantity) values (@LotBatchId,@DateOfDispatch,@Quantity) select cast(scope_identity() as int)", p).First();
+                            var lotExist = connection.Query<Batch>("Select * from BatchMaster where BID = @BID", new { BID = item.BID }).FirstOrDefault();
+                            int availableQuantity = lotExist.AvailableQuantity - item.Quantity;
+                            string updateQuery = @"UPDATE BatchMaster SET AvailableQuantity = @availableQuantity WHERE BID = @BID";
+                            var p = new StockOut
+                            {
+                                Remarks = stockOut.stockOut.Remarks,
+                                DateOfDispatch = stockOut.stockOut.DateOfDispatch,
+                                BatchId = item.BID,
+                                Quantity = item.Quantity,
+                                ProductId = stockOut.stockOut.ProductId,
+                                VoucherNumber = stockOut.stockOut.VoucherNumber,
+                                StockType = stockOut.stockOut.StockType,
+                                IsAWS = stockOut.stockOut.IsAWS,
+                                IsICT = stockOut.stockOut.IsICT,
+                                IsIDT = stockOut.stockOut.IsIDT,
+                                DepotId = stockOut.stockOut.DepotId,
+                                UnitId = stockOut.stockOut.UnitId,
+                                IdtReferenceId = IdtMasterId,
+
+                            };
+                            var result = connection.Execute(updateQuery, new
+                            {
+                                availableQuantity,
+                                item.BID,
+
+                            });
+                            p.StockOutId = connection.Query<int>(@"insert StockOutMaster(Remarks,DateOfDispatch,BatchId,Quantity,ProductId,VoucherNumber,StockType,IsAWS,IsICT,IsIDT,DepotId,UnitId,IdtReferenceId) values (@Remarks,@DateOfDispatch,@BatchId,@Quantity,@ProductId,@VoucherNumber,@StockType,@IsAWS,@IsICT,@IsIDT,@DepotId,@UnitId,@IdtReferenceId) select cast(scope_identity() as int)", p).First();
 
 
 
 
+                        }
+                        scope.Complete();
+                        return Json(new { Message = "Stock quantity updated successfully" });
+                        
                     }
-                    return Json(new { Message = "Stock quantity updated successfully" });
-
-
                 }
+
+
+
                 catch (Exception ex)
                 {
                     throw ex;

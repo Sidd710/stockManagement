@@ -122,6 +122,7 @@ namespace StockManagementApi.Controllers
                         Status = value.status,
 
 
+
                     };
                     p.Id = connection.Query<int>(@"insert IdtIcTOutMaster(IdtIctType,ReferenceNumber,DateOfEntry,Status) values (@IdtIctType,@ReferenceNumber,@DateOfEntry,@Status) select cast(scope_identity() as int)", p).First();
                     if (value.firstForm.IdtIctType == "LUT")
@@ -135,9 +136,10 @@ namespace StockManagementApi.Controllers
                                 quantity = item.quantity,
                                 date = item.date,
                                 IdtIctMasterId = p.Id,
-                                depotId = 0
+                                depotId = 0,
+                                AvailableQuantity = item.quantity
                             };
-                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,unitId,quantity,date,depotId) values (@IdtIctMasterId,@productId,@unitId,@quantity,@date,@depotId) select cast(scope_identity() as int)", data).First();
+                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,unitId,quantity,date,depotId,AvailableQuantity) values (@IdtIctMasterId,@productId,@unitId,@quantity,@date,@depotId,@AvailableQuantity) select cast(scope_identity() as int)", data).First();
                         }
                     }
                     else
@@ -150,10 +152,11 @@ namespace StockManagementApi.Controllers
                                 depotId = item.depotId,
                                 quantity = item.quantity,
                                 date = item.date,
-                                IdtIctMasterId = p.Id
+                                IdtIctMasterId = p.Id,
+                                AvailableQuantity = item.quantity
 
                             };
-                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                            var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctOutMasterId,productId,depotId,quantity,date,AvailableQuantity) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date,@AvailableQuantity) select cast(scope_identity() as int)", data).First();
                         }
                     }
 
@@ -399,7 +402,7 @@ namespace StockManagementApi.Controllers
                                     };
                                     var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,unitId,quantity,date,depotId) values (@IdtIctMasterId,@productId,@unitId,@quantity,@date,@depotId) select cast(scope_identity() as int)", data).First();
                                 }
-                            }                          
+                            }
                         }
                         else
                         {
@@ -415,18 +418,22 @@ namespace StockManagementApi.Controllers
                                     var quantity = value.depotProdcutValueList[i].quantity;
                                     var date = value.depotProdcutValueList[i].date;
                                     var DetailsId = value.depotProdcutValueList[i].Id;
+                                    var AvailableQuantity = value.depotProdcutValueList[i].quantity;
+                                    var ModifiedOn = DateTime.Now;
                                     //var IdtIctMasterId = IdtIctMasterId;
 
 
                                     //   data.Id = connection.Query<int>(@"UPDATE IdtIctDetails SET IdtIctMasterId=@IdtIctMasterId,productId=@productId,depotId=@depotId,quantity=@quantity,date=@dte) select cast(scope_identity() as int)", p).First();
-                                    string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date WHERE Id = @DetailsId";
+                                    string updateQueryforDetails = @"UPDATE IdtIctOutDetails SET productId = @productId,depotId=@depotId,quantity=@quantity,date=@date,AvailableQuantity=@AvailableQuantity,ModifiedOn=@ModifiedOn WHERE Id = @DetailsId";
                                     var result2 = connection.Execute(updateQueryforDetails, new
                                     {
                                         productId,
                                         depotId,
                                         quantity,
                                         date,
-                                        DetailsId
+                                        DetailsId,
+                                        AvailableQuantity,
+                                        ModifiedOn
                                     });
                                 }
                                 else
@@ -437,10 +444,11 @@ namespace StockManagementApi.Controllers
                                         depotId = value.depotProdcutValueList[i].depotId,
                                         quantity = value.depotProdcutValueList[i].quantity,
                                         date = value.depotProdcutValueList[i].date,
-                                        IdtIctMasterId = value.depotProdcutValueList[i].IdtIctMasterId
+                                        IdtIctMasterId = value.depotProdcutValueList[i].IdtIctMasterId,
+                                        AddedOn = DateTime.Now
 
                                     };
-                                    var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date) select cast(scope_identity() as int)", data).First();
+                                    var id = connection.Query<int>(@"insert IdtIctOutDetails(IdtIctMasterId,productId,depotId,quantity,date,AddedOn) values (@IdtIctMasterId,@productId,@depotId,@quantity,@date,@AddedOn) select cast(scope_identity() as int)", data).First();
                                 }
                             }
                         }
@@ -465,7 +473,7 @@ namespace StockManagementApi.Controllers
             return JSONString;
         }
         [HttpGet]
-        public List<InData> viewIdtReferenceNumber()
+        public dynamic viewIdtReferenceNumber()
         {
             //  List<firstForm> IdtIctInList = new List<firstForm>();
             List<InData> data = new List<InData>();
@@ -492,9 +500,32 @@ namespace StockManagementApi.Controllers
                     refList.Type = cpLprefNumberList[i].Type;
                     data.Add(refList);
                 }
-                return data;
+                IdtReferenceData IdtReferenceData = new IdtReferenceData();
+                IdtReferenceData.ReferenceData = data;
+                return IdtReferenceData;
 
-
+            }
+        }
+        [HttpGet]
+        public IdtReferenceData viewIdtOutReferenceNumber()
+        {
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                List<InData> data = new List<InData>();
+                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIctOutMaster WHERE Status='Completed'").ToList();
+                //   var list = DataTableToJSONWithJSONNet(refNumberList);
+                // dynamic json = JsonConvert.DeserializeObject(list);
+                for (int i = 0; i < IdtrefNumberList.Count; i++)
+                {
+                    InData refList = new InData();
+                    refList.Id = IdtrefNumberList[i].Id;
+                    refList.ReferenceNumber = IdtrefNumberList[i].ReferenceNumber;
+                    refList.Type = IdtrefNumberList[i].IdtIctType;
+                    data.Add(refList);
+                }
+                IdtReferenceData IdtReferenceData = new IdtReferenceData();
+                IdtReferenceData.ReferenceData = data;
+                return IdtReferenceData;
             }
         }
     }

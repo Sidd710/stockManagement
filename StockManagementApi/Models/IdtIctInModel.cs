@@ -120,4 +120,8 @@ namespace StockManagementApi.Models
         public string Type { get; set; }
     }
 
+    public class IdtReferenceData
+    {
+        public List<InData> ReferenceData { get; set; }
+    }
 }

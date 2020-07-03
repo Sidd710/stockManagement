@@ -154,6 +154,8 @@ namespace StockManagementApi.Models
         public int? DepotId { get; set; }
         [JsonProperty("UId")]
         public int? UnitId { get; set; }
+        public int? IdtReferenceId { get; set; }
+        public string ReferenceNumber { get; set; }
 
 
     }
