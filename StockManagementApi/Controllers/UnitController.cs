@@ -38,15 +38,15 @@ namespace StockManagementApi.Controllers
                     var p = new UnitList
                     {
                         Unit_Name = value.Unit_Name,
-                        Depu_Id= value.Depu_Id,
-                        Unit_Desc = value.Unit_Desc,                        
+                        Depu_Id = value.Depu_Id,
+                        Unit_Desc = value.Unit_Desc,
                         IsActive = true,
                         Addedon = DateTime.Now,
                         ModifiedOn = DateTime.Now,
                         Command = 0,
                         Formation = 0,
-                        UnitType=value.UnitType,
-                        UnitTypeOther=value.UnitTypeOther
+                        UnitType = value.UnitType,
+                        UnitTypeOther = value.UnitTypeOther
                     };
                     p.Unit_Id = connection.Query<int>(@"insert UnitMaster(Unit_Name,Depu_Id,Unit_Desc,IsActive,Addedon,ModifiedOn,Command,Formation,UnitType,UnitTypeOther) values (@Unit_Name,@Depu_Id,@Unit_Desc,@IsActive,@Addedon,@ModifiedOn,@Command,@Formation,@UnitType,@UnitTypeOther) select cast(scope_identity() as int)", p).First();
 
@@ -147,6 +147,7 @@ namespace StockManagementApi.Controllers
             return unit;
         }
 
+
         [HttpPost]
         public async Task<IHttpActionResult> UpdateUnit([FromBody]UnitList value)
         {
@@ -158,32 +159,40 @@ namespace StockManagementApi.Controllers
             using (var connection = new SqlConnection(sqlConnectionString))
             {
 
-
-                connection.Open();
-
-
-                var Unit_Name = value.Unit_Name;
-                var Depu_Id = value.Depu_Id;
-                var Unit_Desc = value.Unit_Desc;                
-                var ModifiedOn = DateTime.Now;
-                var UnitType = value.UnitType;
-                var UnitTypeOther = value.UnitTypeOther;
-                var Unit_Id = value.Unit_Id;
-
-
-                string updateQuery = @"UPDATE UnitMaster SET Unit_Name = @Unit_Name,Depu_Id=@Depu_Id,Unit_Desc=@Unit_Desc,ModifiedOn=@ModifiedOn,UnitType=@UnitType,UnitTypeOther=@UnitTypeOther WHERE Unit_Id = @Unit_Id";
-
-                var result = connection.Execute(updateQuery, new
+                try
                 {
-                    Unit_Name,
-                    Depu_Id,
-                    Unit_Desc,
-                    ModifiedOn,
-                    UnitType,
-                    UnitTypeOther
-                });
-                scope.Complete();
-                return Json(new { Message = "Record Updated Successfully" });
+                    connection.Open();
+
+
+                    var Unit_Name = value.Unit_Name;
+                    var Depu_Id = value.Depu_Id;
+                    var Unit_Desc = value.Unit_Desc;
+                    var ModifiedOn = DateTime.Now;
+                    var UnitType = value.UnitType;
+                    var UnitTypeOther = value.UnitTypeOther;
+                    var Unit_Id = value.Unit_Id;
+
+
+                    string updateQuery = @"UPDATE UnitMaster SET Unit_Name = @Unit_Name,Depu_Id=@Depu_Id,Unit_Desc=@Unit_Desc,ModifiedOn=@ModifiedOn,UnitType=@UnitType,UnitTypeOther=@UnitTypeOther WHERE Unit_Id = @Unit_Id";
+
+                    var result = connection.Execute(updateQuery, new
+                    {
+                        Unit_Name,
+                        Depu_Id,
+                        Unit_Desc,
+                        ModifiedOn,
+                        UnitType,
+                        UnitTypeOther
+                    });
+
+                    scope.Complete();
+                    return Json(new { Message = "Record Updated Successfully" });
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
             }
         }
 
