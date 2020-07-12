@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using static StockManagementApi.Controllers.CategoryController;
 
@@ -111,6 +112,45 @@ namespace StockManagementApi.Controllers
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+
+        public dynamic GetBySupplierId(int Id)
+        {
+            var supplier = new SupplierList();
+            var connection = new SqlConnection(sqlConnectionString);
+            supplier = connection.Query<SupplierList>("Select * from Supplier where Id = @Id", new { Id = Id }).FirstOrDefault();
+            return supplier;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateOriginalManufacturer([FromBody]SupplierList value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var supplier = new SupplierList()
+                {
+                    Address = value.Address,
+                    ContactNo = value.ContactNo,
+                    IsActivated = value.IsActivated,
+                    Name = value.Name,
+                    Id = value.Id
+                };
+
+                string updateQuery = @"UPDATE Supplier SET Address = @Address,ContactNo=@ContactNo,IsActivated = @IsActivated, Name= @Name WHERE Id = @Id";
+
+                var result = connection.Execute(updateQuery, supplier);
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
         }
     }
 }

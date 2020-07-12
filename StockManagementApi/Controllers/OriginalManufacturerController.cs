@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 using static StockManagementApi.Controllers.CategoryController;
 
@@ -111,6 +112,45 @@ namespace StockManagementApi.Controllers
             string JSONString = string.Empty;
             JSONString = JsonConvert.SerializeObject(table);
             return JSONString;
+        }
+
+        public dynamic GetByOriginalManufacturerId(int Id)
+        {
+            var orgManufacturer = new OriginalManufacturerList();
+            var connection = new SqlConnection(sqlConnectionString);
+            orgManufacturer = connection.Query<OriginalManufacturerList>("Select * from OriginalManufacture where Id = @Id", new { Id = Id }).FirstOrDefault();
+            return orgManufacturer;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateOriginalManufacturer([FromBody]OriginalManufacturerList value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var orgManufacturer = new OriginalManufacturerList()
+                {
+                    Address = value.Address,
+                    ContactNo = value.ContactNo,
+                    IsActivated = value.IsActivated,
+                    Name = value.Name,
+                    Id = value.Id
+                };
+
+                string updateQuery = @"UPDATE OriginalManufacture SET Address = @Address,ContactNo=@ContactNo,IsActivated = @IsActivated, Name= @Name WHERE Id = @Id";
+
+                var result = connection.Execute(updateQuery, orgManufacturer);
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
         }
     }
 }

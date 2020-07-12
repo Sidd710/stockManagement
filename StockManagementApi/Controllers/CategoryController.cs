@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http;
 
 namespace StockManagementApi.Controllers
@@ -37,7 +38,7 @@ namespace StockManagementApi.Controllers
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
-            
+
             DataTable dt = new DataTable();
 
             dt.Load(command.ExecuteReader());
@@ -109,15 +110,15 @@ namespace StockManagementApi.Controllers
                     //var userId = identity.Claims
                     //    .Where(c => c.Type == ClaimTypes.Sid)
                     //    .Select(c => c.Value);
-                    var p = new CategoryType { Type = category.Type,Description = category.Description, /*AddedBy = userId.ToString(),*/ AddedOn =DateTime.Now, IsActive = true, Category_ID = category.Category_ID };
+                    var p = new CategoryType { Type = category.Type, Description = category.Description, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = true, Category_ID = category.Category_ID };
                     p.ID = connection.Query<int>(@"insert CategoryType(Type,Description,AddedOn,IsActive,Category_ID) values (@Type,@Description,@AddedOn,@IsActive,@Category_ID) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
-                }   
+                }
                 else
                 {
                     throw new ProcessException("Category type already exists");
-                }      
+                }
             }
 
 
@@ -143,7 +144,7 @@ namespace StockManagementApi.Controllers
                     //var userId = identity.Claims
                     //    .Where(c => c.Type == ClaimTypes.Sid)
                     //    .Select(c => c.Value);
-                    var p = new Category { Category_Code = category.Category_Code, Category_Name= category.Category_Name,Category_desc= category.Category_desc, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = true };
+                    var p = new Category { Category_Code = category.Category_Code, Category_Name = category.Category_Name, Category_desc = category.Category_desc, /*AddedBy = userId.ToString(),*/ AddedOn = DateTime.Now, IsActive = true };
                     p.ID = connection.Query<int>(@"insert CategoryMaster(Category_Code,Category_Name,Category_desc,AddedOn,IsActive) values (@Category_Code,@Category_Name,@Category_desc,@AddedOn,@IsActive) select cast(scope_identity() as int)", p).First();
 
                     return Json(new { Message = "Record Inserted Successfully" });
@@ -175,8 +176,6 @@ namespace StockManagementApi.Controllers
         }
         public async Task<int> InsertAsync(CategoryType objentity, SqlConnection connection, string Action)
         {
-
-            int r = 0;
             try
 
             {
@@ -204,7 +203,7 @@ namespace StockManagementApi.Controllers
                 param.Add("@Output", SqlDbType.Int);
 
 
-           var value=  connection.Query<int>("spcategorytype", param, commandType: CommandType.StoredProcedure);
+                var value = connection.Query<int>("spcategorytype", param, commandType: CommandType.StoredProcedure);
 
                 return 0;
             }
@@ -277,6 +276,88 @@ namespace StockManagementApi.Controllers
                 }
 
 
+            }
+        }
+
+        public dynamic GetByCategoryId(int Id)
+        {
+            var category = new Category();
+            var connection = new SqlConnection(sqlConnectionString);
+            category = connection.Query<Category>("Select * from CategoryMaster where ID = @Id", new { Id = Id }).FirstOrDefault();
+            return category;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateCategory([FromBody]Category value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var category = new Category()
+                {
+                    Category_Code = value.Category_Code,
+                    Category_desc = value.Category_desc,
+                    Category_Name = value.Category_Name,
+                    IsActive = true,
+                    ModifiedBy = 0,
+                    ModifiedOn = DateTime.Now,
+                    ID = value.ID
+                };
+
+                string updateQuery = @"UPDATE CategoryMaster SET Category_Code = @Category_Code,Category_desc=@Category_desc,Category_Name = @Category_Name, IsActive= @IsActive, ModifiedBy= @ModifiedBy, ModifiedOn= @ModifiedOn WHERE ID = @ID";
+
+                var result = connection.Execute(updateQuery, category);
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
+            }
+        }
+
+        public dynamic GetByCategoryTypeId(int Id)
+        {
+            var categoryType = new CategoryType();
+            var connection = new SqlConnection(sqlConnectionString);
+            categoryType = connection.Query<CategoryType>("Select * from CategoryType where ID = @Id", new { Id = Id }).FirstOrDefault();
+            return categoryType;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateCategoryType([FromBody]CategoryType value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (TransactionScope scope = new TransactionScope())
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+
+                var categoryType = new CategoryType()
+                {
+                    Category_ID = value.Category_ID,
+                    Description = value.Description,
+                    IsActive = value.IsActive,
+                    ModifiedBy = 0,
+                    ModifiedOn = DateTime.Now,
+                    Type = value.Type,
+                    ID = value.ID
+                };
+
+                string updateQuery = @"UPDATE CategoryType SET Category_ID = @Category_ID,Description=@Description,IsActive = @IsActive, ModifiedBy= @ModifiedBy, ModifiedOn= @ModifiedOn, Type= @Type WHERE ID = @ID";
+
+                var result = connection.Execute(updateQuery, categoryType);
+                scope.Complete();
+                return Json(new { Message = "Record Updated Successfully" });
             }
         }
     }
