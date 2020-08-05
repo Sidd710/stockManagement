@@ -528,6 +528,66 @@ namespace StockManagementApi.Controllers
                 return IdtReferenceData;
             }
         }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteIdtIct([FromBody]Object Id)
+        {
+            var id = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                connection.Open();
+
+                var IdtIctDetails = connection.Query<firstForm>("select * from IdtIcTMaster where Id = @Id", new { Id = id }).FirstOrDefault();
+                if (IdtIctDetails == null)
+                {
+                    throw new ProcessException("Selected Idt Ict Details does not exists");
+                }
+                else
+                {
+                    string deleteDetailsQuery = @"Delete From IdtIctDetails where IdtIctMasterId = @Id";
+                    var result = connection.Execute(deleteDetailsQuery, new { Id = id });                    
+                    
+                    string deleteMasterQuery = @"Delete From IdtIcTMaster where Id = @Id";
+                    var resultMaster = connection.Execute(deleteMasterQuery, new { Id = id });
+                                                                                    
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+            }
+        }
+
+        [HttpPut]
+        public async Task<IHttpActionResult> DeleteIdtIctOut([FromBody]Object Id)
+        {
+            var id = Convert.ToInt32(Id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                connection.Open();
+
+                var IdtIctDetails = connection.Query<firstForm>("select * from IdtIctOutMaster where Id = @Id", new { Id = id }).FirstOrDefault();
+                if (IdtIctDetails == null)
+                {
+                    throw new ProcessException("Selected Idt Ict Details does not exists");
+                }
+                else
+                {
+                    string deleteDetailsQuery = @"Delete From IdtIctOutDetails where IdtIctOutMasterId = @Id";
+                    var result = connection.Execute(deleteDetailsQuery, new { Id = id });
+
+                    string deleteMasterQuery = @"Delete From IdtIctOutMaster where Id = @Id";
+                    var resultMaster = connection.Execute(deleteMasterQuery, new { Id = id });
+
+                    return Json(new { Message = "Record deleted successfully!" });
+                }
+            }
+        }
     }
 
 }
