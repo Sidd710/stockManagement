@@ -32,7 +32,11 @@ namespace StockManagementApi.Controllers
 
 
                 connection.Open();
-
+                var homeDepot = connection.Query<DepotList>("select * from depumaster where IsParent = 1").FirstOrDefault();
+                if(homeDepot != null && value.IsParent)
+                {
+                    return Json(new { Message = "Only one home depot can be added which is already exists!" });
+                }
                 var CommandExist = connection.Query<DepotList>("Select * from depumaster where Depu_Name = @Depu_Name", new { Depu_Name = value.Depu_Name }).FirstOrDefault();
                 if (CommandExist == null)
                 {
@@ -160,6 +164,10 @@ namespace StockManagementApi.Controllers
 
 
                 connection.Open();
+                var homeDepot = connection.Query<DepotList>("select * from depumaster where IsParent = 1").FirstOrDefault();
+                if (homeDepot.Depu_Id != value.Depu_Id && value.IsParent) {
+                    return Json(new { Message = "Only one home depot can be added which is already exists!" });
+                }
                 var AWS = string.Empty;
                 var ICT = string.Empty;
                 var IDT = string.Empty;
