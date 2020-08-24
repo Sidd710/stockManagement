@@ -260,11 +260,11 @@ namespace StockManagementApi.Controllers
                         var ReferenceNumber = value.firstForm.ReferenceNumber;
                         var DateOfEntry = value.firstForm.DateOfEntry;
                         var Status = value.status;
-
+                        var ReasonToUpdate = value.firstForm.ReasonToUpdate;
 
                         //};
                         // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType=@IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status where  Id = @Id";
-                        string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+                        string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status,ReasonToUpdate=@ReasonToUpdate WHERE Id = @Id";
 
                         var result = connection.Execute(updateQuery, new
                         {
@@ -272,6 +272,7 @@ namespace StockManagementApi.Controllers
                             ReferenceNumber,
                             DateOfEntry,
                             Status,
+                            ReasonToUpdate,
                             Id
                         });
                         var IdtIctMasterId = Id;

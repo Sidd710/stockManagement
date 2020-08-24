@@ -31,6 +31,7 @@ namespace StockManagementApi.Models
         public string IdtIctType { get; set; }
         public string ReferenceNumber { get; set; }
         public string Status { get; set; }
+        public string ReasonToUpdate { get; set; }
     }
     public class depotValue
     {
