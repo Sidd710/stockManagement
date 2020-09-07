@@ -500,7 +500,7 @@ namespace StockManagementApi.Controllers
 
             using (var connection = new SqlConnection(sqlConnectionString))
             {
-                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIcTMaster WHERE Status='Completed'").ToList();
+                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIcTMaster WHERE Status='InProgress'").ToList();
                 //   var list = DataTableToJSONWithJSONNet(refNumberList);
                 // dynamic json = JsonConvert.DeserializeObject(list);
                 for (int i = 0; i < IdtrefNumberList.Count; i++)
@@ -532,7 +532,7 @@ namespace StockManagementApi.Controllers
             using (var connection = new SqlConnection(sqlConnectionString))
             {
                 List<InData> data = new List<InData>();
-                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIctOutMaster WHERE Status='Completed'").ToList();
+                var IdtrefNumberList = connection.Query<firstForm>("Select * from IdtIctOutMaster WHERE Status='InProgress'").ToList();
                 //   var list = DataTableToJSONWithJSONNet(refNumberList);
                 // dynamic json = JsonConvert.DeserializeObject(list);
                 for (int i = 0; i < IdtrefNumberList.Count; i++)
