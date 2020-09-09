@@ -191,7 +191,11 @@ namespace StockManagementApi.Models
         public string IsICT { get; set; }
         public string CPLPNumber { get; set; }
         public string IDTICTNumber { get; set; }
-
+        public string OrignalManufacture { get; set; }
+        public string packaging { get; set; }
+        public decimal? weight { get; set; }
+        public string supplier { get; set; }
+        public string Remarks { get; set; }
     }
     public class ViewStockOut
     {

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.UI.WebControls;
 
 namespace StockManagementApi.Controllers
 {
@@ -441,6 +442,12 @@ namespace StockManagementApi.Controllers
                     viewStockInDetails.CRVNo = item.CRVNo;
                     viewStockInDetails.Quantity = item.Quantity;
                     viewStockInDetails.AccountingUnit = currentProduct.Unit;
+                    viewStockInDetails.OrignalManufacture = item.OriginalManf;
+                    viewStockInDetails.packaging = item.PackingMaterial;
+                    viewStockInDetails.supplier = item.SupplierNo;
+                    viewStockInDetails.weight = item.Weight;
+                    viewStockInDetails.Remarks = item.Remarks;
+                    
                     if (item.IsCP == true)
                     {
                         viewStockInDetails.CPLPNumber = "CP-" + item.Remarks;
@@ -706,7 +713,7 @@ namespace StockManagementApi.Controllers
             using (var connection = new SqlConnection(sqlConnectionString))
             {
                 var IdtMaster = connection.Query<firstForm>("Select * from IdtIctMaster where ReferenceNumber = @referenceNUmber", new { ReferenceNumber = referenceNUmber }).FirstOrDefault();
-                var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctOutMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtMaster.Id }).ToList();
+                var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtMaster.Id }).ToList();
                 var findIsAvailable = IdtDetails.FindAll(t => t.AvailableQuantity != "0").ToList();
                 if (findIsAvailable.Count == 0)
                 {
@@ -714,7 +721,7 @@ namespace StockManagementApi.Controllers
                     var Status = "Completed";
 
                     var referenceNumber = referenceNUmber;
-                    string updateMaster = @"UPDATE IdtIctOutMaster SET Status=@Status WHERE ReferenceNumber = @referenceNumber";
+                    string updateMaster = @"UPDATE IdtIctDetails SET Status=@Status WHERE ReferenceNumber = @referenceNumber";
                     var results2 = connection.Execute(updateMaster, new
                     {
                         Status,
