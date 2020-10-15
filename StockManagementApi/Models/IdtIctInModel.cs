@@ -78,7 +78,7 @@ namespace StockManagementApi.Models
         [JsonProperty("pid")]
         public int productId { get; set; }
         [JsonProperty("uid")]
-        public int unitId { get; set; }
+        public int? unitId { get; set; }
         public string quantity { get; set; }
         public string date { get; set; }
         public int IdtIctMasterId { get; set; }

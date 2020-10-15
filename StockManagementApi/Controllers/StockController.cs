@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.UI.WebControls;
 
 namespace StockManagementApi.Controllers
 {
@@ -67,14 +68,24 @@ namespace StockManagementApi.Controllers
                                 var Id = currentIdtDetails.Id;
                                 IdtMasterId = IdtMaster.Id;
                                 string updateQuery = @"UPDATE IdtIctDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
-                                // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+                                var Status = "InProgress";
+                                //FInd available Quanity
 
+                               
+                              
                                 var result = connection.Execute(updateQuery, new
                                 {
                                     NewAvailableQuantity,
                                     ModifiedOn,
                                     Id
                                 });
+                                //var results2 = connection.Execute(updateMaster, new
+                                //{
+                                //    Status,
+                                //    Id
+
+                                //});
+
 
                             }
 
@@ -139,19 +150,21 @@ namespace StockManagementApi.Controllers
                             BatchName = item.BatchName,
                             Quantity = item.Quantity,
                             WarehouseID = item.WarehouseID,
+                           
                             MfgDate = item.MfgDate,
                             ExpDate = item.ExpDate,
                             ESL = item.ESL,
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
                             BatchNo = item.BatchNo,
-                            AddedOn = DateTime.Now
-                            
+                            AddedOn = DateTime.Now,
+                            SectionID = item.SectionID,
+
 
 
                         };
                         quantity = quantity + item.Quantity;
-                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,AddedOn) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@AddedOn) select cast(scope_identity() as int)", batchDetails).First();
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,AddedOn,SectionID) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@AddedOn,@SectionID) select cast(scope_identity() as int)", batchDetails).First();
                         BatchIds.Add(batchDetails.BatchId);
                     }
                     if (CptMasterId == 0)
@@ -289,8 +302,16 @@ namespace StockManagementApi.Controllers
                         var ModifiedOn = DateTime.Now;
                         var Id = currentIdtDetails.Id;
                         IdtMasterId = IdtMaster.Id;
+                        //var Status = "InProgress";
+                        //if(NewAvailableQuantity == 0){
+                        //    Status = "Completed";
+                        //}
+                        //else
+                        //{
+                        //    Status = "InProgress";
+                        //}
                         string update = @"UPDATE IdtIctOutDetails SET AvailableQuantity=@NewAvailableQuantity,ModifiedOn=@ModifiedOn where  Id = @Id";
-                        // string updateQuery = @"UPDATE IdtIcTMaster SET IdtIctType = @IdtIctType,ReferenceNumber=@ReferenceNumber,DateOfEntry=@DateOfEntry,Status=@Status WHERE Id = @Id";
+                        // string updateMaster = @"UPDATE IdtIctOutMaster SET Status=@Status WHERE Id = @Id";
 
                         var results = connection.Execute(update, new
                         {
@@ -299,6 +320,12 @@ namespace StockManagementApi.Controllers
                             Id
                         });
 
+                        //var results2 = connection.Execute(updateMaster, new
+                        //{
+                        //    Status,
+                        //    Id
+                          
+                        //});
 
 
                         foreach (var item in stockOut.stockOutBatchList)
@@ -405,18 +432,24 @@ namespace StockManagementApi.Controllers
 
                         viewStockInDetails.Batch.Add(tempBatchDetails);
                     }
-                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
-                    viewStockInDetails.ProductName = currentProduct.Product_Name;
+                    var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockInDetails.ProductName = currentProduct.VarietyName;
                     
-                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
-                    viewStockInDetails.CategoryName = currentCategory.Category_Name;
+                    var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
+                    viewStockInDetails.CategoryName = currentCategory.Type;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
                     viewStockInDetails.ProductId = item.ProductId;
                     viewStockInDetails.Description = item.Remarks;
                     viewStockInDetails.DateOfReceipt = item.RecievedOn;
                     viewStockInDetails.CRVNo = item.CRVNo;
                     viewStockInDetails.Quantity = item.Quantity;
-                    viewStockInDetails.AccountingUnit = currentProduct.productUnit;
+                    viewStockInDetails.AccountingUnit = currentProduct.Unit;
+                    viewStockInDetails.OrignalManufacture = item.OriginalManf;
+                    viewStockInDetails.packaging = item.PackingMaterial;
+                    viewStockInDetails.supplier = item.SupplierNo;
+                    viewStockInDetails.weight = item.Weight;
+                    viewStockInDetails.Remarks = item.Remarks;
+                    
                     if (item.IsCP == true)
                     {
                         viewStockInDetails.CPLPNumber = "CP-" + item.Remarks;
@@ -480,10 +513,10 @@ namespace StockManagementApi.Controllers
                     tempBatchDetails.Esl = currentBatchDetails.Esl;
 
                     viewStockOutDetails.Batch.Add(tempBatchDetails);
-                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
-                    viewStockOutDetails.ProductName = currentProduct.Product_Name;
-                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
-                    viewStockOutDetails.CategoryName = currentCategory.Category_Name;
+                    var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockOutDetails.ProductName = currentProduct.VarietyName;
+                    var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
+                    viewStockOutDetails.CategoryName = currentCategory.Type;
                     // viewStockOutDetails.BatchId = item.BatchId;
                     viewStockOutDetails.BatchName = currentBatchDetails.BatchName;
                     viewStockOutDetails.ProductId = item.ProductId;
@@ -492,7 +525,7 @@ namespace StockManagementApi.Controllers
                     viewStockOutDetails.DateofDispatch = item.DateofDispatch;
                     viewStockOutDetails.StockType = item.StockType;
                     viewStockOutDetails.VoucherNumber = item.VoucherNumber;
-                    viewStockOutDetails.AccountingUnit = currentProduct.productUnit;
+                    viewStockOutDetails.AccountingUnit = currentProduct.Unit;
                     if (item.IsAWS == true)
                     {
                         viewStockOutDetails.IDTReferenceNumber = "AWS-" + item.Remarks;
@@ -547,10 +580,10 @@ namespace StockManagementApi.Controllers
 
                         viewStockInDetails.Batch.Add(tempBatchDetails);
                     }
-                    var currentProduct = connection.Query<ProductList>("Select * from ProductMaster where Product_ID = @value", new { value = item.ProductId }).FirstOrDefault();
-                    viewStockInDetails.ProductName = currentProduct.Product_Name;
-                    var currentCategory = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentProduct.Category_Id }).FirstOrDefault();
-                    viewStockInDetails.CategoryName = currentCategory.Category_Name;
+                    var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
+                    viewStockInDetails.ProductName = currentProduct.VarietyName;
+                    var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
+                    viewStockInDetails.CategoryName = currentCategory.Type;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
                     viewStockInDetails.ProductId = item.ProductId;
                     viewStockInDetails.Description = item.Remarks;
@@ -592,13 +625,14 @@ namespace StockManagementApi.Controllers
                             ESL = item.ESL,
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
-                            BatchNo = item.BatchNo
+                            BatchNo = item.BatchNo,
+                            SectionID=item.SectionID
 
 
 
                         };
                         quantity = quantity + item.Quantity;
-                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,SectionID) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@SectionID) select cast(scope_identity() as int)", batchDetails).First();
                         BatchIds.Add(batchDetails.BatchId);
                     }
 
@@ -648,6 +682,58 @@ namespace StockManagementApi.Controllers
 
 
 
+            }
+        }
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateIdtOut(string referenceNUmber) 
+        {
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                var IdtMaster = connection.Query<firstForm>("Select * from IdtIctOutMaster where ReferenceNumber = @referenceNUmber", new { ReferenceNumber = referenceNUmber }).FirstOrDefault();
+                var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctOutDetails where IdtIctOutMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtMaster.Id }).ToList();
+                var findIsAvailable = IdtDetails.FindAll(t => t.AvailableQuantity != "0").ToList();
+                if (findIsAvailable.Count == 0)
+                {
+                   
+                       var Status = "Completed";
+
+                    var referenceNumber = referenceNUmber;
+                    string updateMaster = @"UPDATE IdtIctOutMaster SET Status=@Status WHERE ReferenceNumber = @referenceNumber";
+                    var results2 = connection.Execute(updateMaster, new
+                    {
+                        Status,
+                        
+
+                    });
+                  
+                }
+                return Json(new { Message = "Record Updated Successfully" });
+            }
+        }
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateIdtIn(string referenceNUmber)
+        {
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+                var IdtMaster = connection.Query<firstForm>("Select * from IdtIctMaster where ReferenceNumber = @referenceNUmber", new { ReferenceNumber = referenceNUmber }).FirstOrDefault();
+                var IdtDetails = connection.Query<depotProductValueModel>("Select * from IdtIctDetails where IdtIctMasterId=@IdtIctMasterId", new { IdtIctMasterId = IdtMaster.Id }).ToList();
+                var findIsAvailable = IdtDetails.FindAll(t => t.AvailableQuantity != "0").ToList();
+                if (findIsAvailable.Count == 0)
+                {
+
+                    var Status = "Completed";
+
+                    var referenceNumber = referenceNUmber;
+                    string updateMaster = @"UPDATE IdtIctDetails SET Status=@Status WHERE ReferenceNumber = @referenceNumber";
+                    var results2 = connection.Execute(updateMaster, new
+                    {
+                        Status,
+
+
+                    });
+
+                }
+                return Json(new { Message = "Record Updated Successfully" });
             }
         }
     }
