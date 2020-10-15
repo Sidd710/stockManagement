@@ -198,6 +198,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\MyAuthorizationServerProvider.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -214,6 +215,7 @@
     <Compile Include="Models\SupplierList.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\UserMaster.cs" />
+    <Compile Include="Models\Warehouse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SECURITY_DBEntities.cs" />
     <Compile Include="Startup.cs" />

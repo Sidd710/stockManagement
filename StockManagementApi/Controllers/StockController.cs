@@ -150,19 +150,21 @@ namespace StockManagementApi.Controllers
                             BatchName = item.BatchName,
                             Quantity = item.Quantity,
                             WarehouseID = item.WarehouseID,
+                           
                             MfgDate = item.MfgDate,
                             ExpDate = item.ExpDate,
                             ESL = item.ESL,
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
                             BatchNo = item.BatchNo,
-                            AddedOn = DateTime.Now
-                            
+                            AddedOn = DateTime.Now,
+                            SectionID = item.SectionID,
+
 
 
                         };
                         quantity = quantity + item.Quantity;
-                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,AddedOn) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@AddedOn) select cast(scope_identity() as int)", batchDetails).First();
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,AddedOn,SectionID) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@AddedOn,@SectionID) select cast(scope_identity() as int)", batchDetails).First();
                         BatchIds.Add(batchDetails.BatchId);
                     }
                     if (CptMasterId == 0)
@@ -623,13 +625,14 @@ namespace StockManagementApi.Controllers
                             ESL = item.ESL,
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
-                            BatchNo = item.BatchNo
+                            BatchNo = item.BatchNo,
+                            SectionID=item.SectionID
 
 
 
                         };
                         quantity = quantity + item.Quantity;
-                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo) select cast(scope_identity() as int)", batchDetails).First();
+                        batchDetails.BatchId = connection.Query<int>(@"insert BatchMaster(BatchName,Quantity,WarehouseID,MFGDate,EXPDate,ESL,AvailableQuantity,BatchCode,BatchNo,SectionID) values (@BatchName,@Quantity,@WarehouseID,@MFGDate,@EXPDate,@ESL,@AvailableQuantity,@BatchCode,@BatchNo,@SectionID) select cast(scope_identity() as int)", batchDetails).First();
                         BatchIds.Add(batchDetails.BatchId);
                     }
 

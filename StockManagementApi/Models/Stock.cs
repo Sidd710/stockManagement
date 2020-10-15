@@ -101,6 +101,8 @@ namespace StockManagementApi.Models
         [JsonProperty("Avl")]
         public int AvailableQuantity { get; set; }
         public DateTime AddedOn { get; set; }
+       // public int WarehouseID { get; set; }
+        public int SectionID { get; set; }
 
 
 
