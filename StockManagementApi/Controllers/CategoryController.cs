@@ -327,6 +327,30 @@ namespace StockManagementApi.Controllers
             categoryType = connection.Query<CategoryType>("Select * from CategoryType where ID = @Id", new { Id = Id }).FirstOrDefault();
             return categoryType;
         }
+        public ProductMasterNew GetProductByCategory(int Id)
+        {
+            var productListNew = new List<ProductListNew>();
+            var connection = new SqlConnection(sqlConnectionString);
+            productListNew = connection.Query<ProductListNew>("Select * from ProductMaster_new where ID = @Id", new { Id = Id }).ToList();
+            ProductMasterNew productMasterNew = new ProductMasterNew()
+            {
+                ProductListNew = productListNew
+            };
+            
+           // productMasterNew.ProductListNew = productListNew;
+            return productMasterNew;
+        }
+        public CategoryTypeList GetByCategoryTypeForMobile(int Id)
+        {
+            
+            var connection = new SqlConnection(sqlConnectionString);
+            var list = connection.Query<CategoryType>("Select * from CategoryType where ID = @Id", new { Id = Id }).ToList();
+            var categoryType = new CategoryTypeList()
+            {
+                categoryTypeList = list
+            };
+            return categoryType;
+        }
 
         [HttpPost]
         public async Task<IHttpActionResult> UpdateCategoryType([FromBody]CategoryType value)

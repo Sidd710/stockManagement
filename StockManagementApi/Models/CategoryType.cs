@@ -39,4 +39,8 @@ namespace StockManagementApi.Models
     {
         public dynamic CategoryList { get; set; }
     }
+    public class CategoryTypeList
+    {
+        public List<CategoryType> categoryTypeList { get; set; }
+    }
 }

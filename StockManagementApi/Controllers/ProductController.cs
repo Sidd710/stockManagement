@@ -71,6 +71,48 @@ namespace StockManagementApi.Controllers
 
             }
         }
+        public async Task<IHttpActionResult> AddSingleProduct([FromBody] ProductListNew value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+
+                connection.Open();
+                    var p = new ProductListNew
+                    {
+                        VarietyName = value.VarietyName,
+                        CatTypeId = value.CatTypeId,
+                        Unit = value.Unit,
+                        IsLot = value.IsLot,
+                        IsActive = true,
+                        GName = value.GName,
+                        AddedOn = DateTime.Now,
+                        AddedBy = 1,
+                        speci = value.speci,
+                        GSreservre = value.GSreservre,
+                        AdminComment = value.AdminComment,
+                        ProductDesc = value.ProductDesc,
+                    };
+                    p.Id = connection.Query<int>(@"insert ProductMaster_New(VarietyName,CatTypeId,Unit,IsLot,IsActive,GName,AddedOn,
+                        AddedBy,speci,GSreservre,AdminComment,ProductDesc) values (@VarietyName,@CatTypeId,@Unit,@IsLot,@IsActive,@GName,@AddedOn,
+                        @AddedBy,@speci,@GSreservre,@AdminComment,@ProductDesc) select cast(scope_identity() as int)", p).First();
+
+                return Json(new { Message = "Record Inserted Successfully" });
+
+
+                //}
+                //else
+                //{
+                //    throw new ProcessException("Username already exists");
+                //}
+
+
+            }
+        }
         public ProductListData GetAllProduct()
         {
             ProductListData data = new ProductListData();
@@ -92,6 +134,8 @@ namespace StockManagementApi.Controllers
             return data;
 
         }
+
+        
 
         public string DataTableToJSONWithJSONNet(DataTable table)
         {
