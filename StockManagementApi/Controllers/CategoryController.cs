@@ -331,7 +331,7 @@ namespace StockManagementApi.Controllers
         {
             var productListNew = new List<ProductListNew>();
             var connection = new SqlConnection(sqlConnectionString);
-            productListNew = connection.Query<ProductListNew>("Select * from ProductMaster_new where ID = @Id", new { Id = Id }).ToList();
+            productListNew = connection.Query<ProductListNew>("Select * from ProductMaster_new where CatTypeId = @CatTypeId", new { CatTypeId = Id }).ToList();
             ProductMasterNew productMasterNew = new ProductMasterNew()
             {
                 ProductListNew = productListNew
