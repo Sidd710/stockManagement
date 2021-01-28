@@ -124,6 +124,26 @@ namespace StockManagementApi.Controllers
             return depotListData;
 
         }
+        public DepotListData GetIctDepot()
+        {
+            DepotListData depotListData = new DepotListData();
+            var connection = new SqlConnection(sqlConnectionString);
+            SqlCommand command = new SqlCommand("spIctDepot", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            connection.Open();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(command.ExecuteReader());
+            var list = DataTableToJSONWithJSONNet(dt);
+            dynamic json = JsonConvert.DeserializeObject(list);
+
+            depotListData.DepotList = json;
+            return depotListData;
+
+        }
+        
 
         [HttpPost]
         public async Task<IHttpActionResult> AddIdtIctOut([FromBody]IdtIctOutModel value)
