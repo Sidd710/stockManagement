@@ -22,7 +22,7 @@ namespace StockManagementApi.Controllers
         [HttpPost]
         [ResponseType(typeof(StockIn))]
 
-        public async Task<IHttpActionResult> AddStock([FromBody]StockIn stockIn)
+        public async Task<IHttpActionResult> AddStock([FromBody] StockIn stockIn)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace StockManagementApi.Controllers
                 using (var connection = new SqlConnection(sqlConnectionString))
                 {
                     connection.Open();
-                    Nullable<int> IdtMasterId =0;
+                    Nullable<int> IdtMasterId = 0;
                     Nullable<int> CptMasterId = 0;
                     if (stockIn.stock.IsIDT || stockIn.stock.IsICT)
                     {
@@ -71,8 +71,8 @@ namespace StockManagementApi.Controllers
                                 var Status = "InProgress";
                                 //FInd available Quanity
 
-                               
-                              
+
+
                                 var result = connection.Execute(updateQuery, new
                                 {
                                     NewAvailableQuantity,
@@ -91,7 +91,7 @@ namespace StockManagementApi.Controllers
 
 
                         }
-                        
+
                     }
                     else
                     {
@@ -150,7 +150,7 @@ namespace StockManagementApi.Controllers
                             BatchName = item.BatchName,
                             Quantity = item.Quantity,
                             WarehouseID = item.WarehouseID,
-                           
+
                             MfgDate = item.MfgDate,
                             ExpDate = item.ExpDate,
                             ESL = item.ESL,
@@ -204,8 +204,8 @@ namespace StockManagementApi.Controllers
 
 
                     };
-                    
-                    
+
+
                     stockInDetails.StockInId = connection.Query<int>(@"insert StockMaster(BatchIdFromMobile,RecievedOn,CRVNo,Remarks,RecievedFrom,
                                          PackingMaterial,OriginalManf,GenericName,Weight,AddedOn,SupplierId,ProductId,Quantity,IsFromMobile,ATNo,OtherSupplier,TransferedBy,SampleSent,SupplierNo,DepotId,IsCP,IsLP,IsIDT,IsICT,IdtMasterId,CptMasterId
 ) values (@BatchIdFromMobile,@RecievedOn,@CRVNo,@Remarks,@RecievedFrom,
@@ -224,11 +224,11 @@ namespace StockManagementApi.Controllers
 
                 throw ex;
             }
-            
 
 
 
-            
+
+
         }
 
         public async Task<IHttpActionResult> StockOut([FromBody] StockOutParameter stockOut)
@@ -271,7 +271,7 @@ namespace StockManagementApi.Controllers
                         }
                         if (stockOut.stockOut.StockType != "LUT")
                         {
-                            
+
                             var isDepot = IdtDetails.Find(t => t.depotId == stockOut.stockOut.DepotId);
                             if (isProduct == null || isDepot == null)
                             {
@@ -289,7 +289,7 @@ namespace StockManagementApi.Controllers
 
 
                         // FindCurrentIdtDetails
-                        var depotId = stockOut.stockOut.DepotId==null?0:stockOut.stockOut.DepotId;
+                        var depotId = stockOut.stockOut.DepotId == null ? 0 : stockOut.stockOut.DepotId;
                         var productId = stockOut.stockOut.ProductId;
                         var unitId = stockOut.stockOut.UnitId;
                         var currentIdtDetails = IdtDetails.Find(t => t.depotId == depotId && t.productId == productId && t.unitId == unitId);
@@ -324,7 +324,7 @@ namespace StockManagementApi.Controllers
                         //{
                         //    Status,
                         //    Id
-                          
+
                         //});
 
 
@@ -380,7 +380,7 @@ namespace StockManagementApi.Controllers
                         }
                         scope.Complete();
                         return Json(new { Message = "Stock quantity updated successfully" });
-                        
+
                     }
                 }
 
@@ -405,7 +405,7 @@ namespace StockManagementApi.Controllers
             {
 
                 connection.Open();
-                StockInList = connection.Query<Stock>("Select * from StockMaster").OrderBy(t=>t.AddedOn).ToList();
+                StockInList = connection.Query<Stock>("Select * from StockMaster").OrderBy(t => t.AddedOn).ToList();
                 foreach (var item in StockInList)
                 {
                     ViewStockIn viewStockInDetails = new ViewStockIn();
@@ -434,7 +434,7 @@ namespace StockManagementApi.Controllers
                     }
                     var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
                     viewStockInDetails.ProductName = currentProduct.VarietyName;
-                    
+
                     var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
                     viewStockInDetails.CategoryName = currentCategory.Type;
                     viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
@@ -449,7 +449,7 @@ namespace StockManagementApi.Controllers
                     viewStockInDetails.supplier = item.SupplierNo;
                     viewStockInDetails.weight = item.Weight;
                     viewStockInDetails.Remarks = item.Remarks;
-                    
+
                     if (item.IsCP == true)
                     {
                         viewStockInDetails.CPLPNumber = "CP-" + item.Remarks;
@@ -470,7 +470,7 @@ namespace StockManagementApi.Controllers
                     {
                         viewStockInDetails.IDTICTNumber = "ICT-" + item.Remarks;
                     }
-                    
+
                     viewStockIns.Add(viewStockInDetails);
 
                 }
@@ -597,7 +597,7 @@ namespace StockManagementApi.Controllers
 
         }
 
-        public async Task<IHttpActionResult> AddStockList([FromBody]List<StockIn> stockInList)
+        public async Task<IHttpActionResult> AddStockList([FromBody] List<StockIn> stockInList)
         {
             if (!ModelState.IsValid)
             {
@@ -626,7 +626,7 @@ namespace StockManagementApi.Controllers
                             AvailableQuantity = item.Quantity,
                             BatchCode = item.BatchCode,
                             BatchNo = item.BatchNo,
-                            SectionID=item.SectionID
+                            SectionID = item.SectionID
 
 
 
@@ -676,7 +676,7 @@ namespace StockManagementApi.Controllers
 
 
                 }
-                    return Json(new { Message = "Record Inserted Successfully" });
+                return Json(new { Message = "Record Inserted Successfully" });
 
 
 
@@ -685,7 +685,7 @@ namespace StockManagementApi.Controllers
             }
         }
         [HttpPost]
-        public async Task<IHttpActionResult> UpdateIdtOut(string referenceNUmber) 
+        public async Task<IHttpActionResult> UpdateIdtOut(string referenceNUmber)
         {
             using (var connection = new SqlConnection(sqlConnectionString))
             {
@@ -694,18 +694,18 @@ namespace StockManagementApi.Controllers
                 var findIsAvailable = IdtDetails.FindAll(t => t.AvailableQuantity != "0").ToList();
                 if (findIsAvailable.Count == 0)
                 {
-                   
-                       var Status = "Completed";
+
+                    var Status = "Completed";
 
                     var referenceNumber = referenceNUmber;
                     string updateMaster = @"UPDATE IdtIctOutMaster SET Status=@Status WHERE ReferenceNumber = @referenceNumber";
                     var results2 = connection.Execute(updateMaster, new
                     {
                         Status,
-                        
+
 
                     });
-                  
+
                 }
                 return Json(new { Message = "Record Updated Successfully" });
             }
@@ -735,6 +735,56 @@ namespace StockManagementApi.Controllers
                 }
                 return Json(new { Message = "Record Updated Successfully" });
             }
+        }
+
+
+        [HttpGet]
+        public AvailableStockForDashboard GetWarehouseStock(int ID)
+        {
+             AvailableStockForDashboard availableStockForDashboards = new AvailableStockForDashboard();
+            availableStockForDashboards.WarehouseId = ID;
+            availableStockForDashboards.availabeProductForDashboards = new List<AvailabeProductForDashboard>();
+
+
+            List<BatchDetails> batch = new List<BatchDetails>();
+            using (var connection = new SqlConnection(sqlConnectionString))
+            {
+
+                connection.Open();
+                Warehouse warehouse = connection.Query<Warehouse>("Select * from tblWarehouse where ID = @ID", new { ID = ID }).FirstOrDefault();
+                batch = connection.Query<BatchDetails>("Select * from BatchMaster where WarehouseID = @ID", new { ID = ID }).ToList();
+                foreach (var item in batch)
+                {
+                    var stockList = connection.Query<Stock>("Select * from StockMaster where BatchIdFromMobile = @ID", new { ID = item.BID }).ToList();
+                    var availableQuantity = 0;
+                    foreach (var stockItme in stockList)
+                    {
+                        AvailabeProductForDashboard availabeProductForDashboards = new AvailabeProductForDashboard();
+                        
+                           var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = stockItme.ProductId }).FirstOrDefault();
+                        var currentCatType = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
+                        var currentCat = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentCatType.Category_ID }).FirstOrDefault();
+                        availabeProductForDashboards.Batch = batch;
+                        availabeProductForDashboards.CategoryName = currentCat.Category_Name;
+                        availabeProductForDashboards.ProductId = stockItme.ProductId;
+                        availabeProductForDashboards.ProductName = currentProduct.VarietyName;
+                        availabeProductForDashboards.Unit = currentProduct.Unit;
+                        availabeProductForDashboards.Quantity = availableQuantity+item.AvailableQuantity;
+
+                        availableStockForDashboards.availabeProductForDashboards.Add(availabeProductForDashboards);
+
+                        //var OtherStockList = connection.Query<Stock>("Select * from StockMaster where ProductId = @ID", new { ID = item.PID }).ToList();
+
+
+
+
+                    }
+                }
+                
+                connection.Close();
+            }
+            return availableStockForDashboards;
+
         }
     }
 }

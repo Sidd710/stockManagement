@@ -83,26 +83,26 @@ namespace StockManagementApi.Controllers
                 WareHouseList tempwarehouseList = new WareHouseList();
                 var ID = warehouseNoList[i].ID;
                 var warehouseSection = connection.Query<WarehouseSection>("Select * from tblSection where WarehouseID = @ID", new { Id = ID }).ToList();
-                for (int j = 0; j < warehouseSection.Count; j++)
-                {
-                    tempwarehouseList.WarehouseId = ID;
-                    tempwarehouseList.WarehouseSection = warehouseSection[j].Section;
-                    tempwarehouseList.WareHouseNo = warehouseNoList[i].WareHouseNo;
-                    tempwarehouseList.SectionId = warehouseSection[j].ID;
-                    warehouseList.Add(tempwarehouseList);
+               // for (int j = 0; j < warehouseSection.Count; j++)
+                //{
+                //    tempwarehouseList.WarehouseId = ID;
+                //    tempwarehouseList.WarehouseSection = warehouseSection[j].Section;
+                //    tempwarehouseList.WareHouseNo = warehouseNoList[i].WareHouseNo;
+                //    tempwarehouseList.SectionId = warehouseSection[j].ID;
+                //    warehouseList.Add(tempwarehouseList);
 
 
-                    DataTable dt = new DataTable();
+                //    DataTable dt = new DataTable();
 
-                    // dt.Load(command.ExecuteReader());
-                    //  var list = DataTableToJSONWithJSONNet(dt);
-                    //dynamic json = JsonConvert.DeserializeObject(warehouseList);
-                    // data.UnitList = json;
-                }
+                //    // dt.Load(command.ExecuteReader());
+                //    //  var list = DataTableToJSONWithJSONNet(dt);
+                //    //dynamic json = JsonConvert.DeserializeObject(warehouseList);
+                //    // data.UnitList = json;
+                //}
 
             }
             WareHouseData wareHouseData = new WareHouseData();
-            wareHouseData.WareHouseLists = warehouseList;
+            wareHouseData.WareHouseLists = warehouseNoList;
             return Ok(wareHouseData);
         }
 

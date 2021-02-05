@@ -233,4 +233,23 @@ namespace StockManagementApi.Models
         public List<BatchDetails> Batch { get; set; }
 
     }
+    public class AvailableStockForDashboard
+    {
+        public int WarehouseId { get; set; }
+        public string BatchId { get; set; }
+        public List<AvailabeProductForDashboard> availabeProductForDashboards { get; set; }
+
+    }
+    public class AvailabeProductForDashboard
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string CategoryName { get; set; }
+        public int Quantity { get; set; }
+        public string Unit { get; set; }
+        public bool AvailableInOther { get; set; }
+        public string OtherShedList { get; set; }
+
+        public List<BatchDetails> Batch { get; set; }
+    }
 }

@@ -42,7 +42,7 @@ namespace StockManagementApi.Models
     }
     public class WareHouseData
     {
-        public List<WareHouseList> WareHouseLists { get; set; }
+        public List<Warehouse> WareHouseLists { get; set; }
 
     }
         

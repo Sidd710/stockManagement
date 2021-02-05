@@ -344,7 +344,7 @@ namespace StockManagementApi.Controllers
         {
             
             var connection = new SqlConnection(sqlConnectionString);
-            var list = connection.Query<CategoryType>("Select * from CategoryType where ID = @Id", new { Id = Id }).ToList();
+            var list = connection.Query<CategoryType>("Select * from CategoryType where Category_Id = @Category_Id", new { Category_Id = Id }).ToList();
             var categoryType = new CategoryTypeList()
             {
                 categoryTypeList = list
