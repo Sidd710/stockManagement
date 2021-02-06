@@ -747,6 +747,7 @@ namespace StockManagementApi.Controllers
 
 
             List<BatchDetails> batch = new List<BatchDetails>();
+            List<int> productIds = new List<int>();
             using (var connection = new SqlConnection(sqlConnectionString))
             {
 
@@ -757,6 +758,7 @@ namespace StockManagementApi.Controllers
                 {
                     var stockList = connection.Query<Stock>("Select * from StockMaster where BatchIdFromMobile = @ID", new { ID = item.BID }).ToList();
                     var availableQuantity = 0;
+                    
                     foreach (var stockItme in stockList)
                     {
                         AvailabeProductForDashboard availabeProductForDashboards = new AvailabeProductForDashboard();
@@ -764,15 +766,19 @@ namespace StockManagementApi.Controllers
                            var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = stockItme.ProductId }).FirstOrDefault();
                         var currentCatType = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
                         var currentCat = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentCatType.Category_ID }).FirstOrDefault();
-                        availabeProductForDashboards.Batch = batch;
-                        availabeProductForDashboards.CategoryName = currentCat.Category_Name;
-                        availabeProductForDashboards.ProductId = stockItme.ProductId;
-                        availabeProductForDashboards.ProductName = currentProduct.VarietyName;
-                        availabeProductForDashboards.Unit = currentProduct.Unit;
-                        availabeProductForDashboards.Quantity = availableQuantity+item.AvailableQuantity;
+                        availabeProductForDashboards.Quantity = availableQuantity + item.AvailableQuantity;
+                        if (!productIds.Contains(stockItme.ProductId))
+                        {
+                            availabeProductForDashboards.Batch = batch;
+                            productIds.Add(stockItme.ProductId);
+                            availabeProductForDashboards.CategoryName = currentCat.Category_Name;
+                            availabeProductForDashboards.ProductId = stockItme.ProductId;
+                            availabeProductForDashboards.ProductName = currentProduct.VarietyName;
+                            availabeProductForDashboards.Unit = currentProduct.Unit;
+                           
 
-                        availableStockForDashboards.availabeProductForDashboards.Add(availabeProductForDashboards);
-
+                            availableStockForDashboards.availabeProductForDashboards.Add(availabeProductForDashboards);
+                        }
                         //var OtherStockList = connection.Query<Stock>("Select * from StockMaster where ProductId = @ID", new { ID = item.PID }).ToList();
 
 
