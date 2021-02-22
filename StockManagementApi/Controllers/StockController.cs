@@ -769,6 +769,32 @@ namespace StockManagementApi.Controllers
                         availabeProductForDashboards.Quantity = availableQuantity + item.AvailableQuantity;
                         if (!productIds.Contains(stockItme.ProductId))
                         {
+                            //IsAvailable Region
+                            var currentProdId = stockItme.ProductId;
+                            var productStockList = connection.Query<Stock>("Select * from StockMaster where ProductId = @ID", new { ID = stockItme.ProductId }).ToList();
+                            for (int i = 0; i < productStockList.Count; i++)
+                            {
+                                var AllBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @ID", new { ID = productStockList[i].BatchIdFromMobile }).ToList();
+                                string warehouseName = "";
+                                for (int j = 0; i < AllBatchDetails.Count; i++)
+                                {
+                                    if (AllBatchDetails[j].AvailableQuantity > 0 && AllBatchDetails[j].WarehouseID!=ID)
+                                    {
+                                        var warehouseDetails = connection.Query<Warehouse>("Select * from tblWarehouse where ID = @ID", new { ID = AllBatchDetails[j].WarehouseID }).FirstOrDefault();
+                                        warehouseName = warehouseName+warehouseDetails.WareHouseNo;
+                                        availabeProductForDashboards.IsAvailableinOther = true;
+                                        availabeProductForDashboards.OtherShedList = warehouseName;
+                                    }
+                                    else
+                                    {
+                                        availabeProductForDashboards.IsAvailableinOther = false;
+                                    }
+                                }
+                            }
+
+
+
+
                             availabeProductForDashboards.Batch = batch;
                             productIds.Add(stockItme.ProductId);
                             availabeProductForDashboards.CategoryName = currentCat.Category_Name;

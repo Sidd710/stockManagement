@@ -249,6 +249,8 @@ namespace StockManagementApi.Models
         public string Unit { get; set; }
         public bool AvailableInOther { get; set; }
         public string OtherShedList { get; set; }
+        public bool IsAvailableinOther { get; set; }
+        public string WarhouseList { get; set; }
 
         public List<BatchDetails> Batch { get; set; }
     }
