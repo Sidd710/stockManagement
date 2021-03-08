@@ -557,38 +557,72 @@ namespace StockManagementApi.Controllers
 
                 connection.Open();
                 StockInList = connection.Query<Stock>("Select * from StockMaster").ToList();
+                List<int> productIds = new List<int>();
                 foreach (var item in StockInList)
                 {
                     AvailableStock viewStockInDetails = new AvailableStock();
                     string[] BatchId = item.BatchIdFromMobile.Split(',');
-                    List<Batch> batch = new List<Batch>();
-
-
-                    foreach (var batchIds in BatchId)
+                    if (!productIds.Contains(item.ProductId))
                     {
-                        viewStockInDetails.Batch = new List<BatchDetails>();
+                        productIds.Add(item.ProductId);
 
-                        var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
-                        BatchDetails tempBatchDetails = new BatchDetails();
-                        tempBatchDetails.BID = currentBatchDetails.BID;
-                        tempBatchDetails.BatchName = currentBatchDetails.BatchName;
-                        tempBatchDetails.Esl = currentBatchDetails.Esl;
-                        tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
-                        tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
-                        tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
-                        tempBatchDetails.WarehouseNo = currentBatchDetails.WarehouseNo;
+                        var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
+                        viewStockInDetails.ProductName = currentProduct.VarietyName;
+                        var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
+                        viewStockInDetails.CategoryName = currentCategory.Type;
+                        viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
+                        viewStockInDetails.ProductId = item.ProductId;
+                        viewStockInDetails.Description = item.Remarks;
+                        viewStockInDetails.DateOfReceipt = item.RecievedOn;
+                        foreach (var batchIds in BatchId)
+                        {
+                            viewStockInDetails.Batch = new List<BatchDetails>();
 
-                        viewStockInDetails.Batch.Add(tempBatchDetails);
+                            var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
+                            BatchDetails tempBatchDetails = new BatchDetails();
+                            tempBatchDetails.BID = currentBatchDetails.BID;
+                            tempBatchDetails.BatchName = currentBatchDetails.BatchName;
+                            tempBatchDetails.Esl = currentBatchDetails.Esl;
+                            tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                            tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
+                            tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
+                            tempBatchDetails.WarehouseNo = currentBatchDetails.WarehouseNo;
+
+                            viewStockInDetails.Batch.Add(tempBatchDetails);
+                        }
+                        viewStockIns.Add(viewStockInDetails);
+
                     }
-                    var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
-                    viewStockInDetails.ProductName = currentProduct.VarietyName;
-                    var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
-                    viewStockInDetails.CategoryName = currentCategory.Type;
-                    viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
-                    viewStockInDetails.ProductId = item.ProductId;
-                    viewStockInDetails.Description = item.Remarks;
-                    viewStockInDetails.DateOfReceipt = item.RecievedOn;
-                    viewStockIns.Add(viewStockInDetails);
+
+                    else
+                    {
+                        foreach (var batchIds in BatchId)
+                        {
+                            viewStockInDetails.Batch = new List<BatchDetails>();
+
+                            var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
+                            Warehouse warehouse = connection.Query<Warehouse>("Select * from tblWarehouse where ID = @ID", new { ID = currentBatchDetails.WarehouseID }).FirstOrDefault();
+
+                            BatchDetails tempBatchDetails = new BatchDetails();
+                            tempBatchDetails.BID = currentBatchDetails.BID;
+                            tempBatchDetails.BatchName = currentBatchDetails.BatchName;
+                            tempBatchDetails.Esl = currentBatchDetails.Esl;
+                            tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                            tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
+                            tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
+                            tempBatchDetails.WarehouseNo = warehouse.WareHouseNo;
+                            tempBatchDetails.Esl = currentBatchDetails.Esl;
+                            tempBatchDetails.MFGDate = currentBatchDetails.MFGDate;
+                            tempBatchDetails.WeightUnit = currentBatchDetails.WeightUnit;
+                            // viewStockInDetails.Batch.Add(tempBatchDetails);
+                            var result = viewStockIns.Find(x => x.ProductId == item.ProductId);
+                            result.Batch.Add(tempBatchDetails);
+                        }
+                        
+
+                    }
+                   
+                    //viewStockIns.Add(viewStockInDetails);
 
                 }
                 connection.Close();
@@ -741,7 +775,7 @@ namespace StockManagementApi.Controllers
         [HttpGet]
         public AvailableStockForDashboard GetWarehouseStock(int ID)
         {
-             AvailableStockForDashboard availableStockForDashboards = new AvailableStockForDashboard();
+            AvailableStockForDashboard availableStockForDashboards = new AvailableStockForDashboard();
             availableStockForDashboards.WarehouseId = ID;
             availableStockForDashboards.availabeProductForDashboards = new List<AvailabeProductForDashboard>();
 
@@ -758,12 +792,12 @@ namespace StockManagementApi.Controllers
                 {
                     var stockList = connection.Query<Stock>("Select * from StockMaster where BatchIdFromMobile = @ID", new { ID = item.BID }).ToList();
                     var availableQuantity = 0;
-                    
+
                     foreach (var stockItme in stockList)
                     {
                         AvailabeProductForDashboard availabeProductForDashboards = new AvailabeProductForDashboard();
-                        
-                           var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = stockItme.ProductId }).FirstOrDefault();
+
+                        var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = stockItme.ProductId }).FirstOrDefault();
                         var currentCatType = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
                         var currentCat = connection.Query<Category>("Select * from CategoryMaster where ID = @value", new { value = currentCatType.Category_ID }).FirstOrDefault();
                         availabeProductForDashboards.Quantity = availableQuantity + item.AvailableQuantity;
@@ -778,10 +812,10 @@ namespace StockManagementApi.Controllers
                                 string warehouseName = "";
                                 for (int j = 0; i < AllBatchDetails.Count; i++)
                                 {
-                                    if (AllBatchDetails[j].AvailableQuantity > 0 && AllBatchDetails[j].WarehouseID!=ID)
+                                    if (AllBatchDetails[j].AvailableQuantity > 0 && AllBatchDetails[j].WarehouseID != ID)
                                     {
                                         var warehouseDetails = connection.Query<Warehouse>("Select * from tblWarehouse where ID = @ID", new { ID = AllBatchDetails[j].WarehouseID }).FirstOrDefault();
-                                        warehouseName = warehouseName+warehouseDetails.WareHouseNo;
+                                        warehouseName = warehouseName + warehouseDetails.WareHouseNo;
                                         availabeProductForDashboards.IsAvailableinOther = true;
                                         availabeProductForDashboards.OtherShedList = warehouseName;
                                     }
@@ -801,7 +835,7 @@ namespace StockManagementApi.Controllers
                             availabeProductForDashboards.ProductId = stockItme.ProductId;
                             availabeProductForDashboards.ProductName = currentProduct.VarietyName;
                             availabeProductForDashboards.Unit = currentProduct.Unit;
-                           
+
 
                             availableStockForDashboards.availabeProductForDashboards.Add(availabeProductForDashboards);
                         }
@@ -812,7 +846,7 @@ namespace StockManagementApi.Controllers
 
                     }
                 }
-                
+
                 connection.Close();
             }
             return availableStockForDashboards;
