@@ -229,7 +229,9 @@ namespace StockManagementApi.Models
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public DateTime DateOfReceipt { get; set; }
-
+        public string unit { get; set; }
+        public int TotalAvailableQuantity { get; set; }
+        public string Sheds { get; set; }
         public List<BatchDetails> Batch { get; set; }
 
     }

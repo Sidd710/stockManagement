@@ -568,28 +568,36 @@ namespace StockManagementApi.Controllers
 
                         var currentProduct = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = @value", new { value = item.ProductId }).FirstOrDefault();
                         viewStockInDetails.ProductName = currentProduct.VarietyName;
+                        viewStockInDetails.unit = currentProduct.Unit;
                         var currentCategory = connection.Query<CategoryType>("Select * from CategoryType where ID = @value", new { value = currentProduct.CatTypeId }).FirstOrDefault();
                         viewStockInDetails.CategoryName = currentCategory.Type;
                         viewStockInDetails.LotBatchId = item.BatchIdFromMobile;
                         viewStockInDetails.ProductId = item.ProductId;
                         viewStockInDetails.Description = item.Remarks;
                         viewStockInDetails.DateOfReceipt = item.RecievedOn;
+                        int availableQUantity = 0;
+                        string sheds = "";
                         foreach (var batchIds in BatchId)
                         {
+                           
                             viewStockInDetails.Batch = new List<BatchDetails>();
-
+                            
                             var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
                             BatchDetails tempBatchDetails = new BatchDetails();
                             tempBatchDetails.BID = currentBatchDetails.BID;
                             tempBatchDetails.BatchName = currentBatchDetails.BatchName;
                             tempBatchDetails.Esl = currentBatchDetails.Esl;
                             tempBatchDetails.AvailableQuantity = currentBatchDetails.AvailableQuantity;
+                            availableQUantity = currentBatchDetails.AvailableQuantity + availableQUantity;
                             tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
                             tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
                             tempBatchDetails.WarehouseNo = currentBatchDetails.WarehouseNo;
+                            sheds = sheds + tempBatchDetails.WarehouseNo+",";
 
                             viewStockInDetails.Batch.Add(tempBatchDetails);
                         }
+                        viewStockInDetails.TotalAvailableQuantity = availableQUantity;
+                        viewStockInDetails.Sheds=sheds.TrimEnd(',');
                         viewStockIns.Add(viewStockInDetails);
 
                     }
@@ -598,12 +606,15 @@ namespace StockManagementApi.Controllers
                     {
                         foreach (var batchIds in BatchId)
                         {
+                            
                             viewStockInDetails.Batch = new List<BatchDetails>();
 
                             var currentBatchDetails = connection.Query<BatchDetails>("Select * from BatchMaster where BID = @value", new { value = batchIds }).FirstOrDefault();
                             Warehouse warehouse = connection.Query<Warehouse>("Select * from tblWarehouse where ID = @ID", new { ID = currentBatchDetails.WarehouseID }).FirstOrDefault();
 
                             BatchDetails tempBatchDetails = new BatchDetails();
+                            int availableQUantity = 0;
+                            string sheds = "";
                             tempBatchDetails.BID = currentBatchDetails.BID;
                             tempBatchDetails.BatchName = currentBatchDetails.BatchName;
                             tempBatchDetails.Esl = currentBatchDetails.Esl;
@@ -614,11 +625,17 @@ namespace StockManagementApi.Controllers
                             tempBatchDetails.Esl = currentBatchDetails.Esl;
                             tempBatchDetails.MFGDate = currentBatchDetails.MFGDate;
                             tempBatchDetails.WeightUnit = currentBatchDetails.WeightUnit;
+                            sheds = sheds + tempBatchDetails.WarehouseNo + ",";
+                            availableQUantity = currentBatchDetails.AvailableQuantity + availableQUantity;
                             // viewStockInDetails.Batch.Add(tempBatchDetails);
                             var result = viewStockIns.Find(x => x.ProductId == item.ProductId);
+                            result.TotalAvailableQuantity = result.TotalAvailableQuantity + availableQUantity;
+                            result.Sheds = result.Sheds + sheds;
                             result.Batch.Add(tempBatchDetails);
+                            
                         }
                         
+
 
                     }
                    
