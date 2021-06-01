@@ -592,12 +592,13 @@ namespace StockManagementApi.Controllers
                             tempBatchDetails.WarehouseID = currentBatchDetails.WarehouseID;
                             tempBatchDetails.EXPDate = currentBatchDetails.EXPDate;
                             tempBatchDetails.WarehouseNo = currentBatchDetails.WarehouseNo;
-                            sheds = sheds + tempBatchDetails.WarehouseNo+",";
-
+                            
+                                sheds = sheds + tempBatchDetails.WarehouseNo + ",";
+                            
                             viewStockInDetails.Batch.Add(tempBatchDetails);
                         }
                         viewStockInDetails.TotalAvailableQuantity = availableQUantity;
-                        viewStockInDetails.Sheds=sheds.TrimEnd(',');
+                        viewStockInDetails.Sheds=sheds;
                         viewStockIns.Add(viewStockInDetails);
 
                     }
@@ -625,12 +626,16 @@ namespace StockManagementApi.Controllers
                             tempBatchDetails.Esl = currentBatchDetails.Esl;
                             tempBatchDetails.MFGDate = currentBatchDetails.MFGDate;
                             tempBatchDetails.WeightUnit = currentBatchDetails.WeightUnit;
-                            sheds = sheds + tempBatchDetails.WarehouseNo + ",";
+                            var result = viewStockIns.Find(x => x.ProductId == item.ProductId);
+                            if (!result.Sheds.TrimEnd(',').Contains(tempBatchDetails.WarehouseNo))
+                            {
+                                sheds = sheds + tempBatchDetails.WarehouseNo + ",";
+                            }
                             availableQUantity = currentBatchDetails.AvailableQuantity + availableQUantity;
                             // viewStockInDetails.Batch.Add(tempBatchDetails);
-                            var result = viewStockIns.Find(x => x.ProductId == item.ProductId);
+                            
                             result.TotalAvailableQuantity = result.TotalAvailableQuantity + availableQUantity;
-                            result.Sheds = result.Sheds + sheds;
+                            result.Sheds = result.Sheds + sheds.TrimEnd(',');
                             result.Batch.Add(tempBatchDetails);
                             
                         }

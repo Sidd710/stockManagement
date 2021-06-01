@@ -194,6 +194,7 @@
     <Compile Include="Controllers\OriginalManufacturerController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StockController.cs" />
+    <Compile Include="Controllers\DotController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Controllers\UnitController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Models\CategoryType.cs" />
     <Compile Include="Models\CPLT.cs" />
     <Compile Include="Models\Depot.cs" />
+    <Compile Include="Models\Dot.cs" />
     <Compile Include="Models\Formation.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\IdtIctInModel.cs" />
