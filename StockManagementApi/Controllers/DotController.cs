@@ -20,7 +20,7 @@ namespace StockManagementApi.Controllers
     {
         string sqlConnectionString = ConfigurationManager.AppSettings["Default"];
         [HttpPost]
-        public async Task<IHttpActionResult> AddDot([FromBody]DotModel value)
+        public async Task<IHttpActionResult> AddDot([FromBody] DotModel value)
         {
             if (!ModelState.IsValid)
             {
@@ -44,8 +44,8 @@ namespace StockManagementApi.Controllers
                         IsActive = true
 
                     };
-                    
-                    
+
+
                     p.Id = connection.Query<int>(@"insert DotMaster(DotName,AccountingUnit,Dot,GSReserve,IsActive) values (@DotName,@AccountingUnit,@Dot,@GSReserve,@IsActive) select cast(scope_identity() as int)", p).First();
                     for (int i = 0; i < value.ProductListNew.Count; i++)
                     {
@@ -56,7 +56,7 @@ namespace StockManagementApi.Controllers
                         };
                         product.DotProductId = connection.Query<int>(@"insert DotProductMaster(DotId,ProductId) values (@DotId,@ProductId) select cast(scope_identity() as int)", product).First();
                     }
-                    
+
 
                     return Json(new { Message = "Record Inserted Successfully" });
 
@@ -72,7 +72,7 @@ namespace StockManagementApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IHttpActionResult> DeleteDot([FromBody]Object Id)
+        public async Task<IHttpActionResult> DeleteDot(int Id)
         {
             var categoryId = Convert.ToInt32(Id);
             if (!ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace StockManagementApi.Controllers
                 }
                 else
                 {
-                    string updateQuery = @"UPDATE Dot Set IsActivated = @IsActive where Id = @Id";
+                    string updateQuery = @"UPDATE DotMaster Set IsActive = 0 where Id = @Id";
                     var result = connection.Execute(updateQuery, new { IsActive = false, Id = categoryId });
 
                     return Json(new { Message = "Record deleted successfully!" });
@@ -104,12 +104,12 @@ namespace StockManagementApi.Controllers
         [HttpGet]
         public dynamic GetAllDot()
         {
-            
+
             var connection = new SqlConnection(sqlConnectionString);
             var dotList = connection.Query<DotModel>("Select * from DotMaster where IsActive = 1").ToList();
             List<DotModel> responseModel = new List<DotModel>();
-            
-            for (int i = 0; i <dotList.Count; i++)
+
+            for (int i = 0; i < dotList.Count; i++)
             {
                 DotModel temp = new DotModel();
                 temp.DotName = dotList[i].DotName;
@@ -118,12 +118,12 @@ namespace StockManagementApi.Controllers
                 temp.GSReserve = dotList[i].GSReserve;
                 temp.Id = dotList[i].Id;
                 temp.ProductListNew = new List<DotProductMaster>();
-                                var dotProductList = connection.Query<DotProductMaster>("Select * from DotProductMaster where DotId = '" + dotList[i].Id + "'").ToList();
+                var dotProductList = connection.Query<DotProductMaster>("Select * from DotProductMaster where DotId = '" + dotList[i].Id + "'").ToList();
                 for (int j = 0; j < dotProductList.Count; j++)
                 {
                     DotProductMaster productList = new DotProductMaster();
-                    
-                    
+
+
                     var ProductList = connection.Query<ProductListNew>("Select * from ProductMaster_New where Id = '" + dotProductList[j].ProductId + "'").First();
                     productList.ProductId = ProductList.Id;
                     productList.productName = ProductList.VarietyName;
@@ -146,7 +146,7 @@ namespace StockManagementApi.Controllers
             return responseModel;
 
         }
-       
+
         public string DataTableToJSONWithJSONNet(DataTable table)
         {
             string JSONString = string.Empty;
@@ -163,7 +163,7 @@ namespace StockManagementApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> UpdateDot([FromBody]DotModel value)
+        public async Task<IHttpActionResult> UpdateDot([FromBody] DotModel value)
         {
             if (!ModelState.IsValid)
             {
@@ -187,6 +187,20 @@ namespace StockManagementApi.Controllers
                 };
 
                 string updateQuery = @"UPDATE DotMaster SET Dot = @Dot,Name=@Name,AccountingUnit = @AccountingUnit,GSReserve=@GSReserve, Name= @Name WHERE Id = @Id";
+                for (int i = 0; i < value.ProductListNew.Count; i++)
+                {
+                    var CommandExist = connection.Query<DotModel>("Select * from DotProductMaster where ProductId = @ProductId and DotId=@DotId", new { ProductId = value.ProductListNew[i].ProductId, DotId = value.Id }).FirstOrDefault();
+                    if (CommandExist == null)
+                    {
+                        var product = new DotProductMaster
+                        {
+                            DotId = p.Id,
+                            ProductId = value.ProductListNew[i].ProductId
+                        };
+                        product.DotProductId = connection.Query<int>(@"insert DotProductMaster(DotId,ProductId) values (@DotId,@ProductId) select cast(scope_identity() as int)", product).First();
+                    }
+                }
+                //For Deleting records
 
                 var result = connection.Execute(updateQuery, value);
                 scope.Complete();
